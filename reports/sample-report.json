@@ -1,0 +1,1888 @@
+{
+  "run": {
+    "id": "qa-20261005T191140Z-508160",
+    "started_at": "2026-10-05T19:11:40.061917Z",
+    "base_url": "http://localhost:8000",
+    "schema_hash": "27d725c74a274a0822181057bf2ffd62e5fcb8818336d8a42a6d2a4e5b5d161e",
+    "model": "deterministic-fallback",
+    "finished_at": "2026-10-05T19:11:40.092830Z",
+    "seed": 42
+  },
+  "discovery": {
+    "status": "PASS",
+    "operations": [
+      {
+        "method": "POST",
+        "path": "/invoices",
+        "operation_id": "create_invoice",
+        "summary": null,
+        "required_fields": [
+          "vendor_id",
+          "po_id",
+          "invoice_number",
+          "amount"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/invoices/{id}/approve",
+        "operation_id": "approve_invoice",
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/invoices/{id}/match",
+        "operation_id": "match_invoice",
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/items",
+        "operation_id": "list_items",
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders",
+        "operation_id": "create_purchase_order",
+        "summary": null,
+        "required_fields": [
+          "vendor_id",
+          "lines"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/purchase-orders/{id}",
+        "operation_id": "get_purchase_order",
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders/{id}/receive",
+        "operation_id": "receive_purchase_order",
+        "summary": null,
+        "required_fields": [
+          "lines"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders/{id}/submit",
+        "operation_id": "submit_purchase_order",
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/vendors",
+        "operation_id": "list_vendors",
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/vendors",
+        "operation_id": "create_vendor",
+        "summary": null,
+        "required_fields": [
+          "name",
+          "active"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/vendors/{id}/exposure",
+        "operation_id": "get_vendor_exposure",
+        "summary": null,
+        "required_fields": []
+      }
+    ],
+    "data_sources": [
+      "/items",
+      "/vendors"
+    ],
+    "limitations": [],
+    "inspected_for_sku": [
+      "GET /items",
+      "GET /vendors",
+      "OpenAPI schemas/examples/enums",
+      "successful safe GET responses"
+    ],
+    "sku_candidates": [
+      "STONE-1"
+    ],
+    "evidence": [
+      {
+        "step_name": "fetch_openapi",
+        "timestamp": "2026-10-05T19:11:40.062372Z",
+        "purpose": "Discover the API contract before constructing payloads.",
+        "method": "GET",
+        "url": "http://localhost:8000/openapi.json",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Mock P2P",
+            "version": "1"
+          },
+          "paths": {
+            "/vendors": {
+              "get": {
+                "operationId": "list_vendors",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              },
+              "post": {
+                "operationId": "create_vendor",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/VendorCreate"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": {
+                    "description": "created"
+                  }
+                }
+              }
+            },
+            "/items": {
+              "get": {
+                "operationId": "list_items",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/purchase-orders": {
+              "post": {
+                "operationId": "create_purchase_order",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/POCreate"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": {
+                    "description": "created"
+                  }
+                }
+              }
+            },
+            "/purchase-orders/{id}/submit": {
+              "post": {
+                "operationId": "submit_purchase_order",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/purchase-orders/{id}/receive": {
+              "post": {
+                "operationId": "receive_purchase_order",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Receipt"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/purchase-orders/{id}": {
+              "get": {
+                "operationId": "get_purchase_order",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/invoices": {
+              "post": {
+                "operationId": "create_invoice",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/InvoiceCreate"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": {
+                    "description": "created"
+                  }
+                }
+              }
+            },
+            "/invoices/{id}/match": {
+              "post": {
+                "operationId": "match_invoice",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/invoices/{id}/approve": {
+              "post": {
+                "operationId": "approve_invoice",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/vendors/{id}/exposure": {
+              "get": {
+                "operationId": "get_vendor_exposure",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "VendorCreate": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "active"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "POCreate": {
+                "type": "object",
+                "required": [
+                  "vendor_id",
+                  "lines"
+                ],
+                "properties": {
+                  "vendor_id": {
+                    "type": "string"
+                  },
+                  "lines": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "sku",
+                        "quantity",
+                        "unit_price"
+                      ],
+                      "properties": {
+                        "sku": {
+                          "type": "string",
+                          "enum": [
+                            "STONE-1"
+                          ]
+                        },
+                        "quantity": {
+                          "type": "number"
+                        },
+                        "unit_price": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Receipt": {
+                "type": "object",
+                "required": [
+                  "lines"
+                ],
+                "properties": {
+                  "lines": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "sku",
+                        "quantity"
+                      ],
+                      "properties": {
+                        "sku": {
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "InvoiceCreate": {
+                "type": "object",
+                "required": [
+                  "vendor_id",
+                  "po_id",
+                  "invoice_number",
+                  "amount"
+                ],
+                "properties": {
+                  "vendor_id": {
+                    "type": "string"
+                  },
+                  "po_id": {
+                    "type": "string"
+                  },
+                  "invoice_number": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "duration_ms": 1.687,
+        "expected_outcome": "OpenAPI document returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "discover_items",
+        "timestamp": "2026-10-05T19:11:40.064854Z",
+        "purpose": "Inspect a parameter-free read-only resource for usable seed data.",
+        "method": "GET",
+        "url": "http://localhost:8000/items",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": [
+          {
+            "sku": "STONE-1"
+          }
+        ],
+        "duration_ms": 0.692,
+        "expected_outcome": "Safe resource returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "discover_vendors",
+        "timestamp": "2026-10-05T19:11:40.065705Z",
+        "purpose": "Inspect a parameter-free read-only resource for usable seed data.",
+        "method": "GET",
+        "url": "http://localhost:8000/vendors",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": [
+          {
+            "id": "v-active",
+            "active": true
+          },
+          {
+            "id": "v-inactive",
+            "active": false
+          }
+        ],
+        "duration_ms": 0.444,
+        "expected_outcome": "Safe resource returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      }
+    ]
+  },
+  "happy_path": {
+    "status": "PASS",
+    "steps": [
+      {
+        "step_name": "create_purchase_order",
+        "timestamp": "2026-10-05T19:11:40.067175Z",
+        "purpose": "Create an isolated PO from discovered schema and SKU.",
+        "method": "POST",
+        "url": "http://localhost:8000/purchase-orders",
+        "request_body": {
+          "vendor_id": "v-active",
+          "lines": [
+            {
+              "sku": "STONE-1",
+              "quantity": "2",
+              "unit_price": "10"
+            }
+          ]
+        },
+        "status_code": 201,
+        "response_body": {
+          "id": "po-1",
+          "lines": [
+            {
+              "id": "po-1-line",
+              "sku": "STONE-1",
+              "quantity": 2,
+              "unit_price": 10
+            }
+          ]
+        },
+        "duration_ms": 0.625,
+        "expected_outcome": "Draft PO created",
+        "observed_outcome": "HTTP 201",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "submit_purchase_order",
+        "timestamp": "2026-10-05T19:11:40.068022Z",
+        "purpose": "Move the PO from draft to submitted state.",
+        "method": "POST",
+        "url": "http://localhost:8000/purchase-orders/po-1/submit",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "status": "submitted"
+        },
+        "duration_ms": 0.64,
+        "expected_outcome": "PO submitted",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "receive_goods",
+        "timestamp": "2026-10-05T19:11:40.068816Z",
+        "purpose": "Record the intended goods receipt quantity.",
+        "method": "POST",
+        "url": "http://localhost:8000/purchase-orders/po-1/receive",
+        "request_body": {
+          "lines": [
+            {
+              "sku": "STONE-1",
+              "quantity": "2"
+            }
+          ]
+        },
+        "status_code": 200,
+        "response_body": {
+          "received_quantity": "2"
+        },
+        "duration_ms": 0.525,
+        "expected_outcome": "Goods receipt recorded",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "create_invoice",
+        "timestamp": "2026-10-05T19:11:40.069469Z",
+        "purpose": "Create an invoice against the isolated PO.",
+        "method": "POST",
+        "url": "http://localhost:8000/invoices",
+        "request_body": {
+          "vendor_id": "v-active",
+          "po_id": "po-1",
+          "invoice_number": "qa-20261005T191140Z-508160-happy-invoice",
+          "amount": "20"
+        },
+        "status_code": 201,
+        "response_body": {
+          "id": "inv-1"
+        },
+        "duration_ms": 0.495,
+        "expected_outcome": "Invoice created",
+        "observed_outcome": "HTTP 201",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "match_invoice",
+        "timestamp": "2026-10-05T19:11:40.070072Z",
+        "purpose": "Run the three-way match.",
+        "method": "POST",
+        "url": "http://localhost:8000/invoices/inv-1/match",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "status": "matched"
+        },
+        "duration_ms": 0.538,
+        "expected_outcome": "Invoice matched",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "approve_invoice",
+        "timestamp": "2026-10-05T19:11:40.070701Z",
+        "purpose": "Approve matched invoice and inspect GL posting.",
+        "method": "POST",
+        "url": "http://localhost:8000/invoices/inv-1/approve",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "status": "approved",
+          "journal": {
+            "lines": [
+              {
+                "debit": "20",
+                "credit": "0"
+              },
+              {
+                "debit": "0",
+                "credit": "20"
+              }
+            ]
+          }
+        },
+        "duration_ms": 0.399,
+        "expected_outcome": "Invoice approved and journal posted",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      }
+    ],
+    "plan": [
+      {
+        "step": "vendor",
+        "reason": "Select an active seed vendor or create one from schema."
+      },
+      {
+        "step": "purchase_order",
+        "reason": "Create a schema-valid PO using a discovered SKU."
+      },
+      {
+        "step": "submit",
+        "reason": "Move the PO into a receivable state."
+      },
+      {
+        "step": "receive",
+        "reason": "Establish deterministic received value."
+      },
+      {
+        "step": "invoice",
+        "reason": "Exercise the exact received-value boundary."
+      },
+      {
+        "step": "match",
+        "reason": "Require PO/receipt/invoice agreement."
+      },
+      {
+        "step": "approve",
+        "reason": "Test payable creation and inspect GL evidence."
+      }
+    ],
+    "resources": {
+      "vendor_id": "v-active",
+      "purchase_order_id": "po-1",
+      "invoice_id": "inv-1",
+      "approval": {
+        "status": "approved",
+        "journal": {
+          "lines": [
+            {
+              "debit": "20",
+              "credit": "0"
+            },
+            {
+              "debit": "0",
+              "credit": "20"
+            }
+          ]
+        }
+      },
+      "exact_boundary_received_value": "20",
+      "exact_boundary_invoice_value": "20"
+    }
+  },
+  "adversarial": [
+    {
+      "rule": "three_way_match_gate",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": {
+          "exposure": "20"
+        },
+        "after": {
+          "exposure": "20"
+        }
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "exposure": "20"
+          },
+          "actual": {
+            "exposure": "20"
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.071419Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "v-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-2",
+            "lines": [
+              {
+                "id": "po-2-line",
+                "sku": "STONE-1",
+                "quantity": 2,
+                "unit_price": 10
+              }
+            ]
+          },
+          "duration_ms": 0.508,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.072053Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-2/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "submitted"
+          },
+          "duration_ms": 0.395,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-05T19:11:40.072579Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-2/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "received_quantity": "2"
+          },
+          "duration_ms": 0.445,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-05T19:11:40.073142Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices",
+          "request_body": {
+            "vendor_id": "v-active",
+            "po_id": "po-2",
+            "invoice_number": "qa-20261005T191140Z-508160-unmatched-invoice",
+            "amount": "20"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "inv-2"
+          },
+          "duration_ms": 0.46,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.073706Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "20"
+          },
+          "duration_ms": 0.524,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "approve_unmatched_invoice",
+          "timestamp": "2026-10-05T19:11:40.074320Z",
+          "purpose": "Attempt approval without matching.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices/inv-2/approve",
+          "request_body": null,
+          "status_code": 409,
+          "response_body": {
+            "detail": "invoice not matched"
+          },
+          "duration_ms": 0.376,
+          "expected_outcome": "Approval rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Negative control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.074778Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "20"
+          },
+          "duration_ms": 0.357,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "excess_goods_receipt",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": {
+          "id": "po-3",
+          "vendor_id": "v-active",
+          "ordered": "2",
+          "received": "0",
+          "price": "10",
+          "sku": "STONE-1",
+          "status": "submitted"
+        },
+        "after": {
+          "id": "po-3",
+          "vendor_id": "v-active",
+          "ordered": "2",
+          "received": "0",
+          "price": "10",
+          "sku": "STONE-1",
+          "status": "submitted"
+        }
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "id": "po-3",
+            "vendor_id": "v-active",
+            "ordered": "2",
+            "received": "0",
+            "price": "10",
+            "sku": "STONE-1",
+            "status": "submitted"
+          },
+          "actual": {
+            "id": "po-3",
+            "vendor_id": "v-active",
+            "ordered": "2",
+            "received": "0",
+            "price": "10",
+            "sku": "STONE-1",
+            "status": "submitted"
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.075378Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "v-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-3",
+            "lines": [
+              {
+                "id": "po-3-line",
+                "sku": "STONE-1",
+                "quantity": 2,
+                "unit_price": 10
+              }
+            ]
+          },
+          "duration_ms": 0.468,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.075951Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-3/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "submitted"
+          },
+          "duration_ms": 0.342,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.076374Z",
+          "purpose": "Observe PO receipt state.",
+          "method": "GET",
+          "url": "http://localhost:8000/purchase-orders/po-3",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-3",
+            "vendor_id": "v-active",
+            "ordered": "2",
+            "received": "0",
+            "price": "10",
+            "sku": "STONE-1",
+            "status": "submitted"
+          },
+          "duration_ms": 0.345,
+          "expected_outcome": "PO state is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "PO captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_excess_quantity",
+          "timestamp": "2026-10-05T19:11:40.076830Z",
+          "purpose": "Attempt to receive 3 units against 2 ordered.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-3/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "3"
+              }
+            ]
+          },
+          "status_code": 409,
+          "response_body": {
+            "detail": "quantity exceeds ordered"
+          },
+          "duration_ms": 0.468,
+          "expected_outcome": "Receipt rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Negative control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.077388Z",
+          "purpose": "Observe PO receipt state.",
+          "method": "GET",
+          "url": "http://localhost:8000/purchase-orders/po-3",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-3",
+            "vendor_id": "v-active",
+            "ordered": "2",
+            "received": "0",
+            "price": "10",
+            "sku": "STONE-1",
+            "status": "submitted"
+          },
+          "duration_ms": 0.377,
+          "expected_outcome": "PO state is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "PO captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "overpayment_protection",
+      "status": "HELD",
+      "evidence": {
+        "received_value": "10",
+        "invoice_value": "10.01",
+        "approved": false,
+        "state_before": {
+          "exposure": "20"
+        },
+        "state_after": {
+          "exposure": "20"
+        }
+      },
+      "assertions": [
+        {
+          "name": "invoice_exceeds_received_value",
+          "passed": true,
+          "expected": "> 10",
+          "actual": "10.01",
+          "explanation": "Attack value is above the deterministically calculated received value."
+        },
+        {
+          "name": "invoice_not_approved",
+          "passed": true,
+          "expected": false,
+          "actual": false,
+          "explanation": "An over-value invoice must not become an approved payable."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "exposure": "20"
+          },
+          "actual": {
+            "exposure": "20"
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.077977Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "v-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-4",
+            "lines": [
+              {
+                "id": "po-4-line",
+                "sku": "STONE-1",
+                "quantity": 2,
+                "unit_price": 10
+              }
+            ]
+          },
+          "duration_ms": 0.457,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.078538Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-4/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "submitted"
+          },
+          "duration_ms": 0.333,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-05T19:11:40.078983Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-4/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "1"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "received_quantity": "1"
+          },
+          "duration_ms": 0.424,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.079492Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "20"
+          },
+          "duration_ms": 0.364,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_over_value_invoice",
+          "timestamp": "2026-10-05T19:11:40.079970Z",
+          "purpose": "Attempt invoice one cent above received value.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices",
+          "request_body": {
+            "vendor_id": "v-active",
+            "po_id": "po-4",
+            "invoice_number": "qa-20261005T191140Z-508160-overpay-invoice",
+            "amount": "10.01"
+          },
+          "status_code": 422,
+          "response_body": {
+            "detail": "invoice exceeds received value"
+          },
+          "duration_ms": 0.445,
+          "expected_outcome": "Invoice cannot become payable",
+          "observed_outcome": "HTTP 422",
+          "interpretation": "Overpayment attack initiated.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.080497Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "20"
+          },
+          "duration_ms": 0.339,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": ""
+    },
+    {
+      "rule": "inactive_vendor_gate",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": {
+          "exposure": "0"
+        },
+        "after": {
+          "exposure": "0"
+        }
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "exposure": "0"
+          },
+          "actual": {
+            "exposure": "0"
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.081019Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-inactive/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "0"
+          },
+          "duration_ms": 0.363,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_po_inactive_vendor",
+          "timestamp": "2026-10-05T19:11:40.081504Z",
+          "purpose": "Attempt PO creation for inactive vendor.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "v-inactive",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "1",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 409,
+          "response_body": {
+            "detail": "inactive vendor"
+          },
+          "duration_ms": 0.428,
+          "expected_outcome": "PO rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Negative control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.082012Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-inactive/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "0"
+          },
+          "duration_ms": 0.353,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "partial_receipt_disclosure",
+      "status": "HELD",
+      "evidence": {
+        "ordered": "2",
+        "received": "1",
+        "match_response": {
+          "status": "partial_match",
+          "partial": true
+        }
+      },
+      "assertions": [
+        {
+          "name": "receipt_is_numerically_partial",
+          "passed": true,
+          "expected": "received < 2",
+          "actual": "1",
+          "explanation": "Quantities are compared with Decimal."
+        },
+        {
+          "name": "partial_state_disclosed",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "A rejection or explicit partial/mismatch marker is required."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.082568Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "v-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-5",
+            "lines": [
+              {
+                "id": "po-5-line",
+                "sku": "STONE-1",
+                "quantity": 2,
+                "unit_price": 10
+              }
+            ]
+          },
+          "duration_ms": 0.448,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.083153Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-5/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "submitted"
+          },
+          "duration_ms": 0.374,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-05T19:11:40.083649Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-5/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "1"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "received_quantity": "1"
+          },
+          "duration_ms": 0.403,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-05T19:11:40.084151Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices",
+          "request_body": {
+            "vendor_id": "v-active",
+            "po_id": "po-5",
+            "invoice_number": "qa-20261005T191140Z-508160-partial-invoice",
+            "amount": "10"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "inv-3"
+          },
+          "duration_ms": 0.406,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "match_partial_receipt",
+          "timestamp": "2026-10-05T19:11:40.084654Z",
+          "purpose": "Match invoice against partially received PO.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices/inv-3/match",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "partial_match",
+            "partial": true
+          },
+          "duration_ms": 0.367,
+          "expected_outcome": "Explicit partial/mismatch state",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Partial-receipt control observed.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": ""
+    },
+    {
+      "rule": "duplicate_invoice_protection",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": {
+          "exposure": "20"
+        },
+        "after": {
+          "exposure": "20"
+        }
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "exposure": "20"
+          },
+          "actual": {
+            "exposure": "20"
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.085310Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "v-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-6",
+            "lines": [
+              {
+                "id": "po-6-line",
+                "sku": "STONE-1",
+                "quantity": 2,
+                "unit_price": 10
+              }
+            ]
+          },
+          "duration_ms": 0.467,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.085879Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-6/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "submitted"
+          },
+          "duration_ms": 0.342,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-05T19:11:40.086332Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-6/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "received_quantity": "2"
+          },
+          "duration_ms": 0.395,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-05T19:11:40.086826Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices",
+          "request_body": {
+            "vendor_id": "v-active",
+            "po_id": "po-6",
+            "invoice_number": "qa-20261005T191140Z-508160-duplicate-invoice",
+            "amount": "20"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "inv-4"
+          },
+          "duration_ms": 0.41,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.087360Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "20"
+          },
+          "duration_ms": 0.361,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_duplicate_invoice",
+          "timestamp": "2026-10-05T19:11:40.087795Z",
+          "purpose": "Repeat same vendor and invoice number.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices",
+          "request_body": {
+            "vendor_id": "v-active",
+            "po_id": "po-6",
+            "invoice_number": "qa-20261005T191140Z-508160-duplicate-invoice",
+            "amount": "20"
+          },
+          "status_code": 409,
+          "response_body": {
+            "detail": "duplicate invoice"
+          },
+          "duration_ms": 0.414,
+          "expected_outcome": "Duplicate rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Duplicate control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-05T19:11:40.088285Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://localhost:8000/vendors/v-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "exposure": "20"
+          },
+          "duration_ms": 0.58,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "gl_balance",
+      "status": "HELD",
+      "evidence": {
+        "total_debits": "20",
+        "total_credits": "20",
+        "lines": [
+          {
+            "debit": "20",
+            "credit": "0"
+          },
+          {
+            "debit": "0",
+            "credit": "20"
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "name": "total_debits_equal_total_credits",
+          "passed": true,
+          "expected": "20",
+          "actual": "20",
+          "explanation": "Journal totals were summed with Decimal."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.089173Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "v-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-7",
+            "lines": [
+              {
+                "id": "po-7-line",
+                "sku": "STONE-1",
+                "quantity": 2,
+                "unit_price": 10
+              }
+            ]
+          },
+          "duration_ms": 0.576,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-05T19:11:40.089879Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-7/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "submitted"
+          },
+          "duration_ms": 0.44,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-05T19:11:40.090475Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://localhost:8000/purchase-orders/po-7/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "received_quantity": "2"
+          },
+          "duration_ms": 0.486,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-05T19:11:40.091110Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices",
+          "request_body": {
+            "vendor_id": "v-active",
+            "po_id": "po-7",
+            "invoice_number": "qa-20261005T191140Z-508160-gl-invoice",
+            "amount": "20"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "inv-5"
+          },
+          "duration_ms": 0.504,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "match_invoice",
+          "timestamp": "2026-10-05T19:11:40.091727Z",
+          "purpose": "Run the three-way match.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices/inv-5/match",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "matched"
+          },
+          "duration_ms": 0.374,
+          "expected_outcome": "Invoice matched",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "approve_invoice",
+          "timestamp": "2026-10-05T19:11:40.092218Z",
+          "purpose": "Approve matched invoice and inspect GL posting.",
+          "method": "POST",
+          "url": "http://localhost:8000/invoices/inv-5/approve",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "approved",
+            "journal": {
+              "lines": [
+                {
+                  "debit": "20",
+                  "credit": "0"
+                },
+                {
+                  "debit": "0",
+                  "credit": "20"
+                }
+              ]
+            }
+          },
+          "duration_ms": 0.434,
+          "expected_outcome": "Invoice approved and journal posted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": ""
+    }
+  ],
+  "summary": {
+    "overall_status": "PASS",
+    "held": 7,
+    "breached": 0,
+    "inconclusive": 0,
+    "errors": 0,
+    "highest_risk_findings": []
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "run": {
+    "id": "qa-20261005T190826Z-780457",
+    "started_at": "2026-10-05T19:08:26.301666Z",
+    "base_url": "http://localhost:8000",
+    "schema_hash": "unavailable",
+    "model": "deterministic-fallback",
+    "finished_at": "2026-10-05T19:08:28.125950Z",
+    "seed": null
+  },
+  "discovery": {
+    "status": "ERROR",
+    "operations": [
+      {
+        "method": "POST",
+        "path": "/invoices",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/invoices/{id}/approve",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/invoices/{id}/match",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/purchase-orders/{id}",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders/{id}/receive",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders/{id}/submit",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/vendors",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/vendors",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/vendors/{id}/exposure",
+        "operation_id": null,
+        "summary": null,
+        "required_fields": []
+      }
+    ],
+    "data_sources": [],
+    "limitations": [
+      "OpenAPI unavailable; limited to conservatively probing documented GET endpoints.",
+      "No SKU/item identifier found in OpenAPI schemas, examples, enums, or safe GET data."
+    ],
+    "inspected_for_sku": [
+      "GET /vendors",
+      "GET /vendors",
+      "OpenAPI schemas/examples/enums",
+      "successful safe GET responses"
+    ],
+    "sku_candidates": []
+  },
+  "happy_path": {
+    "status": "ERROR",
+    "steps": [],
+    "plan": [
+      {
+        "step": "vendor",
+        "reason": "Select an active seed vendor or create one from schema."
+      },
+      {
+        "step": "purchase_order",
+        "reason": "Create a schema-valid PO using a discovered SKU."
+      },
+      {
+        "step": "submit",
+        "reason": "Move the PO into a receivable state."
+      },
+      {
+        "step": "receive",
+        "reason": "Establish deterministic received value."
+      },
+      {
+        "step": "invoice",
+        "reason": "Exercise the exact received-value boundary."
+      },
+      {
+        "step": "match",
+        "reason": "Require PO/receipt/invoice agreement."
+      },
+      {
+        "step": "approve",
+        "reason": "Test payable creation and inspect GL evidence."
+      }
+    ],
+    "resources": {
+      "limitation": "No usable active vendor could be selected or created."
+    }
+  },
+  "adversarial": [],
+  "summary": {
+    "overall_status": "ERROR",
+    "held": 0,
+    "breached": 0,
+    "inconclusive": 0,
+    "errors": 0,
+    "highest_risk_findings": []
+  }
+}
