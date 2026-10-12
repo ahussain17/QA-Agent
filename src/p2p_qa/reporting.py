@@ -16,11 +16,14 @@ def summarize(report: QAReport) -> SummaryReport:
     inconclusive = statuses.count("INCONCLUSIVE")
     errors = statuses.count("ERROR")
     risks = [item.rule for item in report.adversarial if item.status == "BREACHED"]
-    if report.happy_path.status == "FAIL" or breached:
+    happy_not_run = report.happy_path.resources.get("not_run") is True
+    if (not happy_not_run and report.happy_path.status == "FAIL") or breached:
         overall = "FAIL"
-    elif report.discovery.status == "ERROR" or report.happy_path.status == "ERROR" or errors:
+    elif report.discovery.status == "ERROR" or (
+        not happy_not_run and report.happy_path.status == "ERROR"
+    ) or errors:
         overall = "ERROR"
-    elif report.happy_path.status == "INCONCLUSIVE" or inconclusive:
+    elif (not happy_not_run and report.happy_path.status == "INCONCLUSIVE") or inconclusive:
         overall = "INCONCLUSIVE"
     else:
         overall = "PASS"
@@ -58,12 +61,16 @@ class ReportWriter:
 
 
 def exit_code(report: QAReport, fail_on_inconclusive: bool = False) -> int:
-    if report.happy_path.status == "FAIL" or report.summary.breached:
+    happy_not_run = report.happy_path.resources.get("not_run") is True
+    if (not happy_not_run and report.happy_path.status == "FAIL") or report.summary.breached:
         return 1
-    if report.happy_path.status == "ERROR" or report.summary.errors:
+    if report.discovery.status == "ERROR" or (
+        not happy_not_run and report.happy_path.status == "ERROR"
+    ) or report.summary.errors:
         return 2
     if fail_on_inconclusive and (
-        report.happy_path.status == "INCONCLUSIVE" or report.summary.inconclusive
+        (not happy_not_run and report.happy_path.status == "INCONCLUSIVE")
+        or report.summary.inconclusive
     ):
         return 3
     return 0

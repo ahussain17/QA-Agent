@@ -34,12 +34,30 @@ LLM reasoning is optional at runtime so discovery and deterministic checks still
 
 ## Commands
 
+Start the included local P2P API in the first terminal:
+
+```text
+python -m p2p_demo --profile secure
+```
+
+Its Swagger documentation is available at `http://localhost:8000/docs`. In a second terminal, run the QA agent:
+
 ```text
 python -m p2p_qa discover --base-url http://localhost:8000
 python -m p2p_qa run --base-url http://localhost:8000 --mode happy
 python -m p2p_qa run --base-url http://localhost:8000 --mode adversarial
 python -m p2p_qa run --base-url http://localhost:8000 --mode all --report reports/qa-report.json
 ```
+
+The API stores data in memory and resets whenever it restarts. To demonstrate that the judge detects real failures, restart it with an intentional vulnerability:
+
+```text
+python -m p2p_demo --profile vulnerable-overpayment
+python -m p2p_demo --profile vulnerable-gl
+python -m p2p_demo --profile vulnerable-all
+```
+
+Run only one API process/profile at a time.
 
 All run options:
 
@@ -56,7 +74,13 @@ Exit codes are `0` for no demonstrated breach/failure, `1` for a breached contro
 
 ## 60-second demo
 
-With the interview API already running:
+Terminal 1:
+
+```powershell
+python -m p2p_demo --profile secure
+```
+
+Terminal 2:
 
 ```powershell
 python -m pip install -e ".[dev]"
@@ -83,7 +107,7 @@ LLM reasoning is used for plan formation, interpreting operation schemas through
 
 Every HTTP step records its purpose, timestamp, sanitized request/response, duration, expectation, observation, interpretation, assertions, attempt number, and verdict. Status codes alone are insufficient: a rejected negative operation is `HELD` only when observable before/after state also remained unchanged. Missing mutation evidence becomes `INCONCLUSIVE`, never `HELD`.
 
-Received value is calculated as `sum(received_quantity * agreed_unit_price)` with `Decimal`. Overpayment is attacked one cent above received value; the happy path checks the exact boundary. Partial receipt requires numeric proof plus an explicit partial/mismatch marker or rejection. GL evidence is searched in approval output and discovered journal/ledger GET operations; unavailable lines are `INCONCLUSIVE`.
+Received value is calculated as `sum(received_quantity * agreed_unit_price)` with `Decimal`. Overpayment is attacked one cent above received value; the happy path checks the exact boundary. Partial receipt requires numeric proof plus an explicit partial/mismatch indication; a generic rejection is `INCONCLUSIVE`. GL evidence is searched in approval output and discovered journal/ledger GET operations; unavailable lines are `INCONCLUSIVE`.
 
 ## Schema adaptation and safety
 
@@ -97,7 +121,7 @@ Safety restrictions include loopback-only execution by default, exact-origin URL
 python -m pytest
 ```
 
-The suite uses `httpx.MockTransport` and covers the happy path, every control, vulnerable overpayment and unbalanced-GL breaches, missing GL evidence, bounded recovery, redaction, serialization, URL safety, and exit codes. `reports/sample-report.json` is generated from the mocked model and validates against the same Pydantic report model used in production.
+The 27-test suite uses `httpx.MockTransport` plus HTTPX's in-process ASGI transport. It covers happy, adversarial-only, and combined execution; every control; vulnerable overpayment and unbalanced-GL breaches; missing GL evidence; bounded recovery; redaction; serialization; URL safety; exit codes; invalid amounts; repeat behavior; exact decimal boundaries; and concurrent duplicate creation. `reports/sample-report.json` is generated from the mocked model and validates against the same Pydantic report model used in production.
 
 ## Role alongside regression tests
 

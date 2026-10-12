@@ -10,10 +10,12 @@ from .utils import decimal, find_first, walk
 class InvariantJudge:
     @staticmethod
     def received_value(lines: list[dict[str, Any]]) -> Decimal:
+        if not lines:
+            raise ValueError("at least one observable PO line is required")
         total = Decimal("0")
         for line in lines:
             qty = decimal(
-                find_first(line, ["received_quantity", "quantity_received", "received_qty", "quantity"])
+                find_first(line, ["received_quantity", "quantity_received", "received_qty", "received", "quantity"])
             )
             price = decimal(find_first(line, ["agreed_unit_price", "unit_price", "unit_cost", "price"]))
             if qty is None or price is None:
@@ -102,7 +104,9 @@ class InvariantJudge:
             ),
             unchanged,
         ]
-        if approved is True or unchanged.passed is False:
+        if not is_attack:
+            status = "INCONCLUSIVE"
+        elif approved is True or unchanged.passed is False:
             status = "BREACHED"
         elif approved is False and unchanged.passed is True:
             status = "HELD"
@@ -134,10 +138,19 @@ class InvariantJudge:
         steps: list[Any] | None = None,
     ) -> ControlResult:
         partial = Decimal("0") <= received < ordered
-        text = str(response).lower()
-        explicit = any(word in text for word in ("partial", "mismatch", "under", "short", "failed", "exception"))
-        rejected = match_status is not None and 400 <= match_status < 500
-        clean = any(word in text for word in ("fully_matched", "full match", "matched", "passed", "success")) and not explicit
+        marker = find_first(response, ["partial", "is_partial", "has_mismatch"])
+        status_value = find_first(response, ["status", "match_status", "result", "detail", "message", "reason"])
+        status_text = str(status_value).lower() if status_value is not None else ""
+        normalized_status = status_text.replace("-", "_").replace(" ", "_")
+        explicit = marker is True or str(marker).lower() in {"true", "1", "yes"} or any(
+            word in status_text for word in ("partial", "mismatch", "under", "short", "failed", "exception")
+        ) or normalized_status in {"unmatched", "not_matched"}
+        matched_marker = find_first(response, ["matched", "is_matched"])
+        clean = (
+            matched_marker is True
+            or str(matched_marker).lower() in {"true", "1", "yes"}
+            or normalized_status in {"fully_matched", "full_match", "matched", "passed", "success", "successful"}
+        )
         assertions = [
             AssertionResult(
                 name="receipt_is_numerically_partial",
@@ -148,20 +161,27 @@ class InvariantJudge:
             ),
             AssertionResult(
                 name="partial_state_disclosed",
-                passed=explicit or rejected,
+                passed=explicit,
                 expected=True,
-                actual=explicit or rejected,
-                explanation="A rejection or explicit partial/mismatch marker is required.",
+                actual=explicit,
+                explanation="The result must explicitly identify the partial or mismatched state.",
+            ),
+            AssertionResult(
+                name="not_reported_as_clean_full_match",
+                passed=not clean,
+                expected=True,
+                actual=not clean,
+                explanation="A numerically partial receipt cannot also be reported as a clean match.",
             ),
         ]
         if match_status is None:
             status = "ERROR"
         elif not partial:
             status = "INCONCLUSIVE"
-        elif rejected or explicit:
-            status = "HELD"
-        elif 200 <= match_status < 300 and clean:
+        elif clean:
             status = "BREACHED"
+        elif explicit:
+            status = "HELD"
         else:
             status = "INCONCLUSIVE"
         return ControlResult(
@@ -200,9 +220,34 @@ class InvariantJudge:
             )
         debits = Decimal("0")
         credits = Decimal("0")
+        malformed = False
         for line in candidate_lines:
-            debits += decimal(find_first(line, ["debit", "debit_amount"])) or Decimal("0")
-            credits += decimal(find_first(line, ["credit", "credit_amount"])) or Decimal("0")
+            debit_raw = find_first(line, ["debit", "debit_amount"])
+            credit_raw = find_first(line, ["credit", "credit_amount"])
+            debit = decimal(debit_raw)
+            credit = decimal(credit_raw)
+            if (debit_raw is not None and debit is None) or (credit_raw is not None and credit is None):
+                malformed = True
+            if debit_raw is None and credit_raw is None:
+                malformed = True
+            debits += debit or Decimal("0")
+            credits += credit or Decimal("0")
+        if malformed:
+            return ControlResult(
+                rule="gl_balance",
+                status="INCONCLUSIVE",
+                evidence={"lines": candidate_lines},
+                assertions=[
+                    AssertionResult(
+                        name="journal_amounts_numeric",
+                        passed=None,
+                        expected="numeric debit/credit values",
+                        actual=candidate_lines,
+                        explanation="At least one journal line had missing or malformed monetary evidence.",
+                    )
+                ],
+                steps=steps or [],
+            )
         balanced = debits == credits
         assertion = AssertionResult(
             name="total_debits_equal_total_credits",

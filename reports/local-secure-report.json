@@ -1,0 +1,3704 @@
+{
+  "run": {
+    "id": "qa-20261011T192946Z-644463",
+    "started_at": "2026-10-11T19:29:46.086109Z",
+    "base_url": "http://127.0.0.1:8000",
+    "schema_hash": "d259949151368be0eaec7735e94dd6aab5438b8c95594e9ad73557e583e8e375",
+    "model": "deterministic-fallback",
+    "finished_at": "2026-10-11T19:29:47.070693Z",
+    "seed": 42
+  },
+  "discovery": {
+    "status": "PASS",
+    "operations": [
+      {
+        "method": "GET",
+        "path": "/health",
+        "operation_id": "health_health_get",
+        "summary": "Health",
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/invoices",
+        "operation_id": "list_invoices_invoices_get",
+        "summary": "List Invoices",
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/invoices",
+        "operation_id": "create_invoice_invoices_post",
+        "summary": "Create Invoice",
+        "required_fields": [
+          "vendor_id",
+          "po_id",
+          "invoice_number",
+          "amount"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/invoices/{invoice_id}",
+        "operation_id": "invoice_detail_invoices__invoice_id__get",
+        "summary": "Invoice Detail",
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/invoices/{invoice_id}/approve",
+        "operation_id": "approve_invoice_invoices__invoice_id__approve_post",
+        "summary": "Approve Invoice",
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/invoices/{invoice_id}/match",
+        "operation_id": "match_invoice_invoices__invoice_id__match_post",
+        "summary": "Match Invoice",
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/items",
+        "operation_id": "list_items_items_get",
+        "summary": "List Items",
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/journals/{invoice_id}",
+        "operation_id": "journal_for_invoice_journals__invoice_id__get",
+        "summary": "Journal For Invoice",
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/purchase-orders",
+        "operation_id": "list_purchase_orders_purchase_orders_get",
+        "summary": "List Purchase Orders",
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders",
+        "operation_id": "create_purchase_order_purchase_orders_post",
+        "summary": "Create Purchase Order",
+        "required_fields": [
+          "vendor_id",
+          "lines"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/purchase-orders/{po_id}",
+        "operation_id": "purchase_order_detail_purchase_orders__po_id__get",
+        "summary": "Purchase Order Detail",
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders/{po_id}/receive",
+        "operation_id": "receive_purchase_order_purchase_orders__po_id__receive_post",
+        "summary": "Receive Purchase Order",
+        "required_fields": [
+          "lines"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/purchase-orders/{po_id}/submit",
+        "operation_id": "submit_purchase_order_purchase_orders__po_id__submit_post",
+        "summary": "Submit Purchase Order",
+        "required_fields": []
+      },
+      {
+        "method": "GET",
+        "path": "/vendors",
+        "operation_id": "list_vendors_vendors_get",
+        "summary": "List Vendors",
+        "required_fields": []
+      },
+      {
+        "method": "POST",
+        "path": "/vendors",
+        "operation_id": "create_vendor_vendors_post",
+        "summary": "Create Vendor",
+        "required_fields": [
+          "name"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/vendors/{vendor_id}/exposure",
+        "operation_id": "vendor_exposure_vendors__vendor_id__exposure_get",
+        "summary": "Vendor Exposure",
+        "required_fields": []
+      }
+    ],
+    "data_sources": [
+      "/health",
+      "/invoices",
+      "/items",
+      "/purchase-orders",
+      "/vendors"
+    ],
+    "limitations": [],
+    "inspected_for_sku": [
+      "GET /health",
+      "GET /invoices",
+      "GET /items",
+      "GET /purchase-orders",
+      "GET /vendors",
+      "OpenAPI schemas/examples/enums",
+      "successful safe GET responses"
+    ],
+    "sku_candidates": [
+      "STONE-1",
+      "CEMENT-50"
+    ],
+    "evidence": [
+      {
+        "step_name": "fetch_openapi",
+        "timestamp": "2026-10-11T19:29:46.651268Z",
+        "purpose": "Discover the API contract before constructing payloads.",
+        "method": "GET",
+        "url": "http://127.0.0.1:8000/openapi.json",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Purchase-to-Pay Demonstration API",
+            "description": "A local, in-memory P2P API for exercising the autonomous QA agent. Current behavior profile: secure.",
+            "version": "1.0.0"
+          },
+          "paths": {
+            "/health": {
+              "get": {
+                "tags": [
+                  "discovery"
+                ],
+                "summary": "Health",
+                "operationId": "health_health_get",
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "type": "object",
+                          "title": "Response Health Health Get"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/items": {
+              "get": {
+                "tags": [
+                  "discovery"
+                ],
+                "summary": "List Items",
+                "operationId": "list_items_items_get",
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "type": "array",
+                          "title": "Response List Items Items Get"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/vendors": {
+              "get": {
+                "tags": [
+                  "vendors"
+                ],
+                "summary": "List Vendors",
+                "operationId": "list_vendors_vendors_get",
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "type": "array",
+                          "title": "Response List Vendors Vendors Get"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "post": {
+                "tags": [
+                  "vendors"
+                ],
+                "summary": "Create Vendor",
+                "operationId": "create_vendor_vendors_post",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/VendorCreate"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "201": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "additionalProperties": true,
+                          "type": "object",
+                          "title": "Response Create Vendor Vendors Post"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/vendors/{vendor_id}/exposure": {
+              "get": {
+                "tags": [
+                  "vendors"
+                ],
+                "summary": "Vendor Exposure",
+                "operationId": "vendor_exposure_vendors__vendor_id__exposure_get",
+                "parameters": [
+                  {
+                    "name": "vendor_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Vendor Id"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "title": "Response Vendor Exposure Vendors  Vendor Id  Exposure Get"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/purchase-orders": {
+              "get": {
+                "tags": [
+                  "purchase-orders"
+                ],
+                "summary": "List Purchase Orders",
+                "operationId": "list_purchase_orders_purchase_orders_get",
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "type": "array",
+                          "title": "Response List Purchase Orders Purchase Orders Get"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "post": {
+                "tags": [
+                  "purchase-orders"
+                ],
+                "summary": "Create Purchase Order",
+                "operationId": "create_purchase_order_purchase_orders_post",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/PurchaseOrderCreate"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "201": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "additionalProperties": true,
+                          "type": "object",
+                          "title": "Response Create Purchase Order Purchase Orders Post"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/purchase-orders/{po_id}/submit": {
+              "post": {
+                "tags": [
+                  "purchase-orders"
+                ],
+                "summary": "Submit Purchase Order",
+                "operationId": "submit_purchase_order_purchase_orders__po_id__submit_post",
+                "parameters": [
+                  {
+                    "name": "po_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Po Id"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "title": "Response Submit Purchase Order Purchase Orders  Po Id  Submit Post"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/purchase-orders/{po_id}/receive": {
+              "post": {
+                "tags": [
+                  "purchase-orders"
+                ],
+                "summary": "Receive Purchase Order",
+                "operationId": "receive_purchase_order_purchase_orders__po_id__receive_post",
+                "parameters": [
+                  {
+                    "name": "po_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Po Id"
+                    }
+                  }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/GoodsReceipt"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "title": "Response Receive Purchase Order Purchase Orders  Po Id  Receive Post"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/purchase-orders/{po_id}": {
+              "get": {
+                "tags": [
+                  "purchase-orders"
+                ],
+                "summary": "Purchase Order Detail",
+                "operationId": "purchase_order_detail_purchase_orders__po_id__get",
+                "parameters": [
+                  {
+                    "name": "po_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Po Id"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "title": "Response Purchase Order Detail Purchase Orders  Po Id  Get"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/invoices": {
+              "get": {
+                "tags": [
+                  "invoices"
+                ],
+                "summary": "List Invoices",
+                "operationId": "list_invoices_invoices_get",
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "type": "array",
+                          "title": "Response List Invoices Invoices Get"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "post": {
+                "tags": [
+                  "invoices"
+                ],
+                "summary": "Create Invoice",
+                "operationId": "create_invoice_invoices_post",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/InvoiceCreate"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "201": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "additionalProperties": true,
+                          "type": "object",
+                          "title": "Response Create Invoice Invoices Post"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/invoices/{invoice_id}": {
+              "get": {
+                "tags": [
+                  "invoices"
+                ],
+                "summary": "Invoice Detail",
+                "operationId": "invoice_detail_invoices__invoice_id__get",
+                "parameters": [
+                  {
+                    "name": "invoice_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Invoice Id"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "title": "Response Invoice Detail Invoices  Invoice Id  Get"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/invoices/{invoice_id}/match": {
+              "post": {
+                "tags": [
+                  "invoices"
+                ],
+                "summary": "Match Invoice",
+                "operationId": "match_invoice_invoices__invoice_id__match_post",
+                "parameters": [
+                  {
+                    "name": "invoice_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Invoice Id"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "title": "Response Match Invoice Invoices  Invoice Id  Match Post"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/invoices/{invoice_id}/approve": {
+              "post": {
+                "tags": [
+                  "invoices"
+                ],
+                "summary": "Approve Invoice",
+                "operationId": "approve_invoice_invoices__invoice_id__approve_post",
+                "parameters": [
+                  {
+                    "name": "invoice_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Invoice Id"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "title": "Response Approve Invoice Invoices  Invoice Id  Approve Post"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/journals/{invoice_id}": {
+              "get": {
+                "tags": [
+                  "accounting"
+                ],
+                "summary": "Journal For Invoice",
+                "operationId": "journal_for_invoice_journals__invoice_id__get",
+                "parameters": [
+                  {
+                    "name": "invoice_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string",
+                      "title": "Invoice Id"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful Response",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "title": "Response Journal For Invoice Journals  Invoice Id  Get"
+                        }
+                      }
+                    }
+                  },
+                  "422": {
+                    "description": "Validation Error",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/HTTPValidationError"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "GoodsReceipt": {
+                "properties": {
+                  "lines": {
+                    "items": {
+                      "$ref": "#/components/schemas/ReceiptLine"
+                    },
+                    "type": "array",
+                    "minItems": 1,
+                    "title": "Lines"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "lines"
+                ],
+                "title": "GoodsReceipt"
+              },
+              "HTTPValidationError": {
+                "properties": {
+                  "detail": {
+                    "items": {
+                      "$ref": "#/components/schemas/ValidationError"
+                    },
+                    "type": "array",
+                    "title": "Detail"
+                  }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+              },
+              "InvoiceCreate": {
+                "properties": {
+                  "vendor_id": {
+                    "type": "string",
+                    "title": "Vendor Id"
+                  },
+                  "po_id": {
+                    "type": "string",
+                    "title": "Po Id"
+                  },
+                  "invoice_number": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "minLength": 1,
+                    "title": "Invoice Number"
+                  },
+                  "amount": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": "0.0"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$"
+                      }
+                    ],
+                    "title": "Amount",
+                    "examples": [
+                      "20.00"
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "vendor_id",
+                  "po_id",
+                  "invoice_number",
+                  "amount"
+                ],
+                "title": "InvoiceCreate"
+              },
+              "POLine": {
+                "properties": {
+                  "sku": {
+                    "type": "string",
+                    "title": "Sku",
+                    "examples": [
+                      "STONE-1"
+                    ]
+                  },
+                  "quantity": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": "0.0"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+                      }
+                    ],
+                    "title": "Quantity",
+                    "examples": [
+                      "2"
+                    ]
+                  },
+                  "unit_price": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": "0.0"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$"
+                      }
+                    ],
+                    "title": "Unit Price",
+                    "examples": [
+                      "10.00"
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "sku",
+                  "quantity",
+                  "unit_price"
+                ],
+                "title": "POLine"
+              },
+              "PurchaseOrderCreate": {
+                "properties": {
+                  "vendor_id": {
+                    "type": "string",
+                    "title": "Vendor Id"
+                  },
+                  "lines": {
+                    "items": {
+                      "$ref": "#/components/schemas/POLine"
+                    },
+                    "type": "array",
+                    "minItems": 1,
+                    "title": "Lines"
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Description"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "vendor_id",
+                  "lines"
+                ],
+                "title": "PurchaseOrderCreate"
+              },
+              "ReceiptLine": {
+                "properties": {
+                  "sku": {
+                    "type": "string",
+                    "title": "Sku",
+                    "examples": [
+                      "STONE-1"
+                    ]
+                  },
+                  "quantity": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": "0.0"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+                      }
+                    ],
+                    "title": "Quantity",
+                    "examples": [
+                      "1"
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "sku",
+                  "quantity"
+                ],
+                "title": "ReceiptLine"
+              },
+              "ValidationError": {
+                "properties": {
+                  "loc": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "integer"
+                        }
+                      ]
+                    },
+                    "type": "array",
+                    "title": "Location"
+                  },
+                  "msg": {
+                    "type": "string",
+                    "title": "Message"
+                  },
+                  "type": {
+                    "type": "string",
+                    "title": "Error Type"
+                  },
+                  "input": {
+                    "title": "Input"
+                  },
+                  "ctx": {
+                    "type": "object",
+                    "title": "Context"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "loc",
+                  "msg",
+                  "type"
+                ],
+                "title": "ValidationError"
+              },
+              "VendorCreate": {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "minLength": 1,
+                    "title": "Name",
+                    "examples": [
+                      "QA Building Supply"
+                    ]
+                  },
+                  "code": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 80
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Code"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "title": "Active",
+                    "default": true
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "title": "VendorCreate"
+              }
+            }
+          }
+        },
+        "duration_ms": 19.526,
+        "expected_outcome": "OpenAPI document returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "discover_health",
+        "timestamp": "2026-10-11T19:29:46.674605Z",
+        "purpose": "Inspect a parameter-free read-only resource for usable seed data.",
+        "method": "GET",
+        "url": "http://127.0.0.1:8000/health",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "status": "ok",
+          "profile": "secure"
+        },
+        "duration_ms": 5.426,
+        "expected_outcome": "Safe resource returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "discover_invoices",
+        "timestamp": "2026-10-11T19:29:46.680375Z",
+        "purpose": "Inspect a parameter-free read-only resource for usable seed data.",
+        "method": "GET",
+        "url": "http://127.0.0.1:8000/invoices",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": [
+          {
+            "id": "invoice-b094cb3a6027",
+            "vendor_id": "vendor-active",
+            "po_id": "po-2777cc68cc17",
+            "invoice_number": "qa-20261011T192817Z-887581-happy-invoice",
+            "amount": "20.00",
+            "status": "approved",
+            "matched": true
+          },
+          {
+            "id": "invoice-1038c82b5cb9",
+            "vendor_id": "vendor-active",
+            "po_id": "po-ab03be269e8e",
+            "invoice_number": "qa-20261011T192817Z-887581-unmatched-invoice",
+            "amount": "20.00",
+            "status": "created",
+            "matched": false
+          },
+          {
+            "id": "invoice-b6173ee52a5c",
+            "vendor_id": "vendor-active",
+            "po_id": "po-bce9f6961de9",
+            "invoice_number": "qa-20261011T192817Z-887581-partial-invoice",
+            "amount": "10.00",
+            "status": "created",
+            "matched": false
+          },
+          {
+            "id": "invoice-30398824ed43",
+            "vendor_id": "vendor-active",
+            "po_id": "po-6169e06b6e8f",
+            "invoice_number": "qa-20261011T192817Z-887581-duplicate-invoice",
+            "amount": "20.00",
+            "status": "created",
+            "matched": false
+          },
+          {
+            "id": "invoice-d9e7c0c4b572",
+            "vendor_id": "vendor-active",
+            "po_id": "po-db68ab8e495b",
+            "invoice_number": "qa-20261011T192817Z-887581-gl-invoice",
+            "amount": "20.00",
+            "status": "approved",
+            "matched": true
+          }
+        ],
+        "duration_ms": 6.429,
+        "expected_outcome": "Safe resource returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "discover_items",
+        "timestamp": "2026-10-11T19:29:46.687186Z",
+        "purpose": "Inspect a parameter-free read-only resource for usable seed data.",
+        "method": "GET",
+        "url": "http://127.0.0.1:8000/items",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": [
+          {
+            "sku": "STONE-1",
+            "description": "Cut limestone block",
+            "active": true
+          },
+          {
+            "sku": "CEMENT-50",
+            "description": "50 lb cement bag",
+            "active": true
+          }
+        ],
+        "duration_ms": 5.667,
+        "expected_outcome": "Safe resource returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "discover_purchase-orders",
+        "timestamp": "2026-10-11T19:29:46.693133Z",
+        "purpose": "Inspect a parameter-free read-only resource for usable seed data.",
+        "method": "GET",
+        "url": "http://127.0.0.1:8000/purchase-orders",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": [
+          {
+            "id": "po-2777cc68cc17",
+            "vendor_id": "vendor-active",
+            "status": "received",
+            "description": "QA happy",
+            "lines": [
+              {
+                "id": "line-f0ff1a04f85e",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "2",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          {
+            "id": "po-ab03be269e8e",
+            "vendor_id": "vendor-active",
+            "status": "received",
+            "description": "QA unmatched",
+            "lines": [
+              {
+                "id": "line-22931a32c5d4",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "2",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          {
+            "id": "po-47196867ac47",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA over-receipt",
+            "lines": [
+              {
+                "id": "line-0083fab3dcb5",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          {
+            "id": "po-b28c7ecf5349",
+            "vendor_id": "vendor-active",
+            "status": "partially_received",
+            "description": "QA overpay",
+            "lines": [
+              {
+                "id": "line-49868bd5e73f",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "1",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          {
+            "id": "po-bce9f6961de9",
+            "vendor_id": "vendor-active",
+            "status": "partially_received",
+            "description": "QA partial",
+            "lines": [
+              {
+                "id": "line-befce6972387",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "1",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          {
+            "id": "po-6169e06b6e8f",
+            "vendor_id": "vendor-active",
+            "status": "received",
+            "description": "QA duplicate",
+            "lines": [
+              {
+                "id": "line-e8037dfdc3aa",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "2",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          {
+            "id": "po-db68ab8e495b",
+            "vendor_id": "vendor-active",
+            "status": "received",
+            "description": "QA gl",
+            "lines": [
+              {
+                "id": "line-0718194329bc",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "2",
+                "unit_price": "10.00"
+              }
+            ]
+          }
+        ],
+        "duration_ms": 5.399,
+        "expected_outcome": "Safe resource returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "discover_vendors",
+        "timestamp": "2026-10-11T19:29:46.698871Z",
+        "purpose": "Inspect a parameter-free read-only resource for usable seed data.",
+        "method": "GET",
+        "url": "http://127.0.0.1:8000/vendors",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": [
+          {
+            "id": "vendor-active",
+            "name": "Acme Building Materials",
+            "code": "ACME",
+            "active": true,
+            "status": "active"
+          },
+          {
+            "id": "vendor-inactive",
+            "name": "Dormant Stone Supply",
+            "code": "DORMANT",
+            "active": false,
+            "status": "inactive"
+          }
+        ],
+        "duration_ms": 6.556,
+        "expected_outcome": "Safe resource returned",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "The read-only discovery request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      }
+    ]
+  },
+  "happy_path": {
+    "status": "PASS",
+    "steps": [
+      {
+        "step_name": "create_purchase_order",
+        "timestamp": "2026-10-11T19:29:46.710467Z",
+        "purpose": "Create an isolated PO from discovered schema and SKU.",
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/purchase-orders",
+        "request_body": {
+          "vendor_id": "vendor-active",
+          "lines": [
+            {
+              "sku": "STONE-1",
+              "quantity": "2",
+              "unit_price": "10"
+            }
+          ],
+          "description": "QA happy"
+        },
+        "status_code": 201,
+        "response_body": {
+          "id": "po-7d2147fcf13e",
+          "vendor_id": "vendor-active",
+          "status": "draft",
+          "description": "QA happy",
+          "lines": [
+            {
+              "id": "line-c2e42a888922",
+              "sku": "STONE-1",
+              "ordered_quantity": "2",
+              "received_quantity": "0",
+              "unit_price": "10.00"
+            }
+          ]
+        },
+        "duration_ms": 7.141,
+        "expected_outcome": "Draft PO created",
+        "observed_outcome": "HTTP 201",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "submit_purchase_order",
+        "timestamp": "2026-10-11T19:29:46.718410Z",
+        "purpose": "Move the PO from draft to submitted state.",
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/purchase-orders/po-7d2147fcf13e/submit",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "id": "po-7d2147fcf13e",
+          "vendor_id": "vendor-active",
+          "status": "submitted",
+          "description": "QA happy",
+          "lines": [
+            {
+              "id": "line-c2e42a888922",
+              "sku": "STONE-1",
+              "ordered_quantity": "2",
+              "received_quantity": "0",
+              "unit_price": "10.00"
+            }
+          ]
+        },
+        "duration_ms": 7.365,
+        "expected_outcome": "PO submitted",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "receive_goods",
+        "timestamp": "2026-10-11T19:29:46.726484Z",
+        "purpose": "Record the intended goods receipt quantity.",
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/purchase-orders/po-7d2147fcf13e/receive",
+        "request_body": {
+          "lines": [
+            {
+              "sku": "STONE-1",
+              "quantity": "2"
+            }
+          ]
+        },
+        "status_code": 200,
+        "response_body": {
+          "id": "po-7d2147fcf13e",
+          "vendor_id": "vendor-active",
+          "status": "received",
+          "description": "QA happy",
+          "lines": [
+            {
+              "id": "line-c2e42a888922",
+              "sku": "STONE-1",
+              "ordered_quantity": "2",
+              "received_quantity": "2",
+              "unit_price": "10.00"
+            }
+          ]
+        },
+        "duration_ms": 8.585,
+        "expected_outcome": "Goods receipt recorded",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "create_invoice",
+        "timestamp": "2026-10-11T19:29:46.735866Z",
+        "purpose": "Create an invoice against the isolated PO.",
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/invoices",
+        "request_body": {
+          "vendor_id": "vendor-active",
+          "po_id": "po-7d2147fcf13e",
+          "invoice_number": "qa-20261011T192946Z-644463-happy-invoice",
+          "amount": "20"
+        },
+        "status_code": 201,
+        "response_body": {
+          "id": "invoice-f6b842510ab0",
+          "vendor_id": "vendor-active",
+          "po_id": "po-7d2147fcf13e",
+          "invoice_number": "qa-20261011T192946Z-644463-happy-invoice",
+          "amount": "20.00",
+          "status": "created",
+          "matched": false
+        },
+        "duration_ms": 9.988,
+        "expected_outcome": "Invoice created",
+        "observed_outcome": "HTTP 201",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "match_invoice",
+        "timestamp": "2026-10-11T19:29:46.746195Z",
+        "purpose": "Run the three-way match.",
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/invoices/invoice-f6b842510ab0/match",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "status": "matched",
+          "matched": true,
+          "partial": false
+        },
+        "duration_ms": 5.966,
+        "expected_outcome": "Invoice matched",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "approve_invoice",
+        "timestamp": "2026-10-11T19:29:46.752610Z",
+        "purpose": "Approve matched invoice and inspect GL posting.",
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/invoices/invoice-f6b842510ab0/approve",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "status": "approved",
+          "invoice_id": "invoice-f6b842510ab0",
+          "journal": {
+            "id": "journal-f3517ece10f3",
+            "invoice_id": "invoice-f6b842510ab0",
+            "lines": [
+              {
+                "account": "Expense",
+                "debit": "20.00",
+                "credit": "0.00"
+              },
+              {
+                "account": "Accounts Payable",
+                "debit": "0.00",
+                "credit": "20.00"
+              }
+            ]
+          }
+        },
+        "duration_ms": 6.737,
+        "expected_outcome": "Invoice approved and journal posted",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "Request succeeded.",
+        "deterministic_assertions": [],
+        "verdict": "PASS",
+        "attempt": 1
+      },
+      {
+        "step_name": "observe_purchase_order",
+        "timestamp": "2026-10-11T19:29:46.759713Z",
+        "purpose": "Observe PO receipt state.",
+        "method": "GET",
+        "url": "http://127.0.0.1:8000/purchase-orders/po-7d2147fcf13e",
+        "request_body": null,
+        "status_code": 200,
+        "response_body": {
+          "id": "po-7d2147fcf13e",
+          "vendor_id": "vendor-active",
+          "status": "received",
+          "description": "QA happy",
+          "lines": [
+            {
+              "id": "line-c2e42a888922",
+              "sku": "STONE-1",
+              "ordered_quantity": "2",
+              "received_quantity": "2",
+              "unit_price": "10.00"
+            }
+          ]
+        },
+        "duration_ms": 7.399,
+        "expected_outcome": "PO state is observable",
+        "observed_outcome": "HTTP 200",
+        "interpretation": "PO captured.",
+        "deterministic_assertions": [
+          {
+            "name": "invoice_equals_observed_received_value",
+            "passed": true,
+            "expected": "20.00",
+            "actual": "20",
+            "explanation": "The exact-boundary invoice is compared with Decimal against observed PO receipt lines."
+          }
+        ],
+        "verdict": "PASS",
+        "attempt": 1
+      }
+    ],
+    "plan": [
+      {
+        "step": "vendor",
+        "reason": "Select an active seed vendor or create one from schema."
+      },
+      {
+        "step": "purchase_order",
+        "reason": "Create a schema-valid PO using a discovered SKU."
+      },
+      {
+        "step": "submit",
+        "reason": "Move the PO into a receivable state."
+      },
+      {
+        "step": "receive",
+        "reason": "Establish deterministic received value."
+      },
+      {
+        "step": "invoice",
+        "reason": "Exercise the exact received-value boundary."
+      },
+      {
+        "step": "match",
+        "reason": "Require PO/receipt/invoice agreement."
+      },
+      {
+        "step": "approve",
+        "reason": "Test payable creation and inspect GL evidence."
+      }
+    ],
+    "resources": {
+      "vendor_id": "vendor-active",
+      "purchase_order_id": "po-7d2147fcf13e",
+      "invoice_id": "invoice-f6b842510ab0",
+      "approval": {
+        "status": "approved",
+        "invoice_id": "invoice-f6b842510ab0",
+        "journal": {
+          "id": "journal-f3517ece10f3",
+          "invoice_id": "invoice-f6b842510ab0",
+          "lines": [
+            {
+              "account": "Expense",
+              "debit": "20.00",
+              "credit": "0.00"
+            },
+            {
+              "account": "Accounts Payable",
+              "debit": "0.00",
+              "credit": "20.00"
+            }
+          ]
+        }
+      },
+      "exact_boundary_received_value": "20.00",
+      "exact_boundary_invoice_value": "20",
+      "boundary_assertion": {
+        "name": "invoice_equals_observed_received_value",
+        "passed": true,
+        "expected": "20.00",
+        "actual": "20",
+        "explanation": "The exact-boundary invoice is compared with Decimal against observed PO receipt lines."
+      }
+    }
+  },
+  "adversarial": [
+    {
+      "rule": "three_way_match_gate",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": {
+          "vendor_id": "vendor-active",
+          "open_ap_liability": "60.00"
+        },
+        "after": {
+          "vendor_id": "vendor-active",
+          "open_ap_liability": "60.00"
+        }
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "actual": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.768436Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ],
+            "description": "QA unmatched"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-70fcbbfbfa44",
+            "vendor_id": "vendor-active",
+            "status": "draft",
+            "description": "QA unmatched",
+            "lines": [
+              {
+                "id": "line-48dda72e602a",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 6.495,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.775328Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-70fcbbfbfa44/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-70fcbbfbfa44",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA unmatched",
+            "lines": [
+              {
+                "id": "line-48dda72e602a",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 5.129,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-11T19:29:46.781109Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-70fcbbfbfa44/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "id": "po-70fcbbfbfa44",
+            "vendor_id": "vendor-active",
+            "status": "received",
+            "description": "QA unmatched",
+            "lines": [
+              {
+                "id": "line-48dda72e602a",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "2",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 6.522,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-11T19:29:46.788101Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "po_id": "po-70fcbbfbfa44",
+            "invoice_number": "qa-20261011T192946Z-644463-unmatched-invoice",
+            "amount": "20"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "invoice-bab3c5bfb8b1",
+            "vendor_id": "vendor-active",
+            "po_id": "po-70fcbbfbfa44",
+            "invoice_number": "qa-20261011T192946Z-644463-unmatched-invoice",
+            "amount": "20.00",
+            "status": "created",
+            "matched": false
+          },
+          "duration_ms": 7.494,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-11T19:29:46.796081Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/vendors/vendor-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "duration_ms": 6.02,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "approve_unmatched_invoice",
+          "timestamp": "2026-10-11T19:29:46.802456Z",
+          "purpose": "Attempt approval without matching.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices/invoice-bab3c5bfb8b1/approve",
+          "request_body": null,
+          "status_code": 409,
+          "response_body": {
+            "detail": "invoice must pass three-way matching before approval"
+          },
+          "duration_ms": 5.405,
+          "expected_outcome": "Approval rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Negative control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-11T19:29:46.808228Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/vendors/vendor-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "duration_ms": 6.468,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "excess_goods_receipt",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": {
+          "id": "po-52cca2d217ef",
+          "vendor_id": "vendor-active",
+          "status": "submitted",
+          "description": "QA over-receipt",
+          "lines": [
+            {
+              "id": "line-c2aea17b3598",
+              "sku": "STONE-1",
+              "ordered_quantity": "2",
+              "received_quantity": "0",
+              "unit_price": "10.00"
+            }
+          ]
+        },
+        "after": {
+          "id": "po-52cca2d217ef",
+          "vendor_id": "vendor-active",
+          "status": "submitted",
+          "description": "QA over-receipt",
+          "lines": [
+            {
+              "id": "line-c2aea17b3598",
+              "sku": "STONE-1",
+              "ordered_quantity": "2",
+              "received_quantity": "0",
+              "unit_price": "10.00"
+            }
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "id": "po-52cca2d217ef",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA over-receipt",
+            "lines": [
+              {
+                "id": "line-c2aea17b3598",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "actual": {
+            "id": "po-52cca2d217ef",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA over-receipt",
+            "lines": [
+              {
+                "id": "line-c2aea17b3598",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.815373Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ],
+            "description": "QA over-receipt"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-52cca2d217ef",
+            "vendor_id": "vendor-active",
+            "status": "draft",
+            "description": "QA over-receipt",
+            "lines": [
+              {
+                "id": "line-c2aea17b3598",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 5.798,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.821618Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-52cca2d217ef/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-52cca2d217ef",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA over-receipt",
+            "lines": [
+              {
+                "id": "line-c2aea17b3598",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 6.87,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.828864Z",
+          "purpose": "Observe PO receipt state.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-52cca2d217ef",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-52cca2d217ef",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA over-receipt",
+            "lines": [
+              {
+                "id": "line-c2aea17b3598",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 5.953,
+          "expected_outcome": "PO state is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "PO captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_excess_quantity",
+          "timestamp": "2026-10-11T19:29:46.835370Z",
+          "purpose": "Attempt to receive 3 units against 2 ordered.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-52cca2d217ef/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "3"
+              }
+            ]
+          },
+          "status_code": 409,
+          "response_body": {
+            "detail": "receipt exceeds ordered quantity for STONE-1"
+          },
+          "duration_ms": 6.999,
+          "expected_outcome": "Receipt rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Negative control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.842830Z",
+          "purpose": "Observe PO receipt state.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-52cca2d217ef",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-52cca2d217ef",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA over-receipt",
+            "lines": [
+              {
+                "id": "line-c2aea17b3598",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 5.367,
+          "expected_outcome": "PO state is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "PO captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "overpayment_protection",
+      "status": "HELD",
+      "evidence": {
+        "received_value": "10.00",
+        "invoice_value": "10.01",
+        "approved": false,
+        "state_before": {
+          "vendor_id": "vendor-active",
+          "open_ap_liability": "60.00"
+        },
+        "state_after": {
+          "vendor_id": "vendor-active",
+          "open_ap_liability": "60.00"
+        }
+      },
+      "assertions": [
+        {
+          "name": "invoice_exceeds_received_value",
+          "passed": true,
+          "expected": "> 10.00",
+          "actual": "10.01",
+          "explanation": "Attack value is above the deterministically calculated received value."
+        },
+        {
+          "name": "invoice_not_approved",
+          "passed": true,
+          "expected": false,
+          "actual": false,
+          "explanation": "An over-value invoice must not become an approved payable."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "actual": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.848916Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ],
+            "description": "QA overpay"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-1a6a11ad9c1b",
+            "vendor_id": "vendor-active",
+            "status": "draft",
+            "description": "QA overpay",
+            "lines": [
+              {
+                "id": "line-8fc05bf5bb04",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 5.635,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.855008Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-1a6a11ad9c1b/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-1a6a11ad9c1b",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA overpay",
+            "lines": [
+              {
+                "id": "line-8fc05bf5bb04",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 5.634,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-11T19:29:46.861168Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-1a6a11ad9c1b/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "1"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "id": "po-1a6a11ad9c1b",
+            "vendor_id": "vendor-active",
+            "status": "partially_received",
+            "description": "QA overpay",
+            "lines": [
+              {
+                "id": "line-8fc05bf5bb04",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "1",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 4.557,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.865926Z",
+          "purpose": "Observe PO receipt state.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-1a6a11ad9c1b",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-1a6a11ad9c1b",
+            "vendor_id": "vendor-active",
+            "status": "partially_received",
+            "description": "QA overpay",
+            "lines": [
+              {
+                "id": "line-8fc05bf5bb04",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "1",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 4.867,
+          "expected_outcome": "PO state is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "PO captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-11T19:29:46.871428Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/vendors/vendor-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "duration_ms": 6.925,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_over_value_invoice",
+          "timestamp": "2026-10-11T19:29:46.878797Z",
+          "purpose": "Attempt invoice one cent above observed received value.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "po_id": "po-1a6a11ad9c1b",
+            "invoice_number": "qa-20261011T192946Z-644463-overpay-invoice",
+            "amount": "10.01"
+          },
+          "status_code": 422,
+          "response_body": {
+            "detail": "invoice amount exceeds received goods value"
+          },
+          "duration_ms": 6.156,
+          "expected_outcome": "Invoice cannot become payable",
+          "observed_outcome": "HTTP 422",
+          "interpretation": "Overpayment attack initiated.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_vendor_exposure",
+          "timestamp": "2026-10-11T19:29:46.885379Z",
+          "purpose": "Observe payable exposure for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/vendors/vendor-active/exposure",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "vendor_id": "vendor-active",
+            "open_ap_liability": "60.00"
+          },
+          "duration_ms": 7.427,
+          "expected_outcome": "Exposure is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Exposure captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": ""
+    },
+    {
+      "rule": "inactive_vendor_gate",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": [],
+        "after": []
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": [],
+          "actual": [],
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "observe_purchase_order_collection",
+          "timestamp": "2026-10-11T19:29:46.893531Z",
+          "purpose": "Observe purchase_order resources for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": [
+            {
+              "id": "po-2777cc68cc17",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA happy",
+              "lines": [
+                {
+                  "id": "line-f0ff1a04f85e",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-ab03be269e8e",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA unmatched",
+              "lines": [
+                {
+                  "id": "line-22931a32c5d4",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-47196867ac47",
+              "vendor_id": "vendor-active",
+              "status": "submitted",
+              "description": "QA over-receipt",
+              "lines": [
+                {
+                  "id": "line-0083fab3dcb5",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "0",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-b28c7ecf5349",
+              "vendor_id": "vendor-active",
+              "status": "partially_received",
+              "description": "QA overpay",
+              "lines": [
+                {
+                  "id": "line-49868bd5e73f",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "1",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-bce9f6961de9",
+              "vendor_id": "vendor-active",
+              "status": "partially_received",
+              "description": "QA partial",
+              "lines": [
+                {
+                  "id": "line-befce6972387",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "1",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-6169e06b6e8f",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA duplicate",
+              "lines": [
+                {
+                  "id": "line-e8037dfdc3aa",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-db68ab8e495b",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA gl",
+              "lines": [
+                {
+                  "id": "line-0718194329bc",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-7d2147fcf13e",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA happy",
+              "lines": [
+                {
+                  "id": "line-c2e42a888922",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-70fcbbfbfa44",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA unmatched",
+              "lines": [
+                {
+                  "id": "line-48dda72e602a",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-52cca2d217ef",
+              "vendor_id": "vendor-active",
+              "status": "submitted",
+              "description": "QA over-receipt",
+              "lines": [
+                {
+                  "id": "line-c2aea17b3598",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "0",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-1a6a11ad9c1b",
+              "vendor_id": "vendor-active",
+              "status": "partially_received",
+              "description": "QA overpay",
+              "lines": [
+                {
+                  "id": "line-8fc05bf5bb04",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "1",
+                  "unit_price": "10.00"
+                }
+              ]
+            }
+          ],
+          "duration_ms": 6.777,
+          "expected_outcome": "Purchase_Order collection is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Purchase_Order collection captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_po_inactive_vendor",
+          "timestamp": "2026-10-11T19:29:46.900955Z",
+          "purpose": "Attempt PO creation for inactive vendor.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "vendor-inactive",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "1",
+                "unit_price": "10"
+              }
+            ]
+          },
+          "status_code": 409,
+          "response_body": {
+            "detail": "purchase orders for inactive vendors are prohibited"
+          },
+          "duration_ms": 7.897,
+          "expected_outcome": "PO rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Negative control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_purchase_order_collection",
+          "timestamp": "2026-10-11T19:29:46.909218Z",
+          "purpose": "Observe purchase_order resources for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": [
+            {
+              "id": "po-2777cc68cc17",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA happy",
+              "lines": [
+                {
+                  "id": "line-f0ff1a04f85e",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-ab03be269e8e",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA unmatched",
+              "lines": [
+                {
+                  "id": "line-22931a32c5d4",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-47196867ac47",
+              "vendor_id": "vendor-active",
+              "status": "submitted",
+              "description": "QA over-receipt",
+              "lines": [
+                {
+                  "id": "line-0083fab3dcb5",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "0",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-b28c7ecf5349",
+              "vendor_id": "vendor-active",
+              "status": "partially_received",
+              "description": "QA overpay",
+              "lines": [
+                {
+                  "id": "line-49868bd5e73f",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "1",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-bce9f6961de9",
+              "vendor_id": "vendor-active",
+              "status": "partially_received",
+              "description": "QA partial",
+              "lines": [
+                {
+                  "id": "line-befce6972387",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "1",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-6169e06b6e8f",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA duplicate",
+              "lines": [
+                {
+                  "id": "line-e8037dfdc3aa",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-db68ab8e495b",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA gl",
+              "lines": [
+                {
+                  "id": "line-0718194329bc",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-7d2147fcf13e",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA happy",
+              "lines": [
+                {
+                  "id": "line-c2e42a888922",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-70fcbbfbfa44",
+              "vendor_id": "vendor-active",
+              "status": "received",
+              "description": "QA unmatched",
+              "lines": [
+                {
+                  "id": "line-48dda72e602a",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "2",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-52cca2d217ef",
+              "vendor_id": "vendor-active",
+              "status": "submitted",
+              "description": "QA over-receipt",
+              "lines": [
+                {
+                  "id": "line-c2aea17b3598",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "0",
+                  "unit_price": "10.00"
+                }
+              ]
+            },
+            {
+              "id": "po-1a6a11ad9c1b",
+              "vendor_id": "vendor-active",
+              "status": "partially_received",
+              "description": "QA overpay",
+              "lines": [
+                {
+                  "id": "line-8fc05bf5bb04",
+                  "sku": "STONE-1",
+                  "ordered_quantity": "2",
+                  "received_quantity": "1",
+                  "unit_price": "10.00"
+                }
+              ]
+            }
+          ],
+          "duration_ms": 6.564,
+          "expected_outcome": "Purchase_Order collection is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Purchase_Order collection captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "partial_receipt_disclosure",
+      "status": "HELD",
+      "evidence": {
+        "ordered": "2",
+        "received": "1",
+        "match_response": {
+          "status": "partial_match",
+          "matched": false,
+          "partial": true,
+          "message": "PO is only partially received"
+        }
+      },
+      "assertions": [
+        {
+          "name": "receipt_is_numerically_partial",
+          "passed": true,
+          "expected": "received < 2",
+          "actual": "1",
+          "explanation": "Quantities are compared with Decimal."
+        },
+        {
+          "name": "partial_state_disclosed",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "The result must explicitly identify the partial or mismatched state."
+        },
+        {
+          "name": "not_reported_as_clean_full_match",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "A numerically partial receipt cannot also be reported as a clean match."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.916566Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ],
+            "description": "QA partial"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-fdcc8cdf4ec5",
+            "vendor_id": "vendor-active",
+            "status": "draft",
+            "description": "QA partial",
+            "lines": [
+              {
+                "id": "line-c1f01922811b",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 7.846,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.924801Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-fdcc8cdf4ec5/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-fdcc8cdf4ec5",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA partial",
+            "lines": [
+              {
+                "id": "line-c1f01922811b",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 6.463,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-11T19:29:46.932013Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-fdcc8cdf4ec5/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "1"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "id": "po-fdcc8cdf4ec5",
+            "vendor_id": "vendor-active",
+            "status": "partially_received",
+            "description": "QA partial",
+            "lines": [
+              {
+                "id": "line-c1f01922811b",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "1",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 8.607,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-11T19:29:46.941149Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "po_id": "po-fdcc8cdf4ec5",
+            "invoice_number": "qa-20261011T192946Z-644463-partial-invoice",
+            "amount": "10"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "invoice-490cb98a9916",
+            "vendor_id": "vendor-active",
+            "po_id": "po-fdcc8cdf4ec5",
+            "invoice_number": "qa-20261011T192946Z-644463-partial-invoice",
+            "amount": "10.00",
+            "status": "created",
+            "matched": false
+          },
+          "duration_ms": 5.575,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.947105Z",
+          "purpose": "Observe PO receipt state.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-fdcc8cdf4ec5",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-fdcc8cdf4ec5",
+            "vendor_id": "vendor-active",
+            "status": "partially_received",
+            "description": "QA partial",
+            "lines": [
+              {
+                "id": "line-c1f01922811b",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "1",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 7.526,
+          "expected_outcome": "PO state is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "PO captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "match_partial_receipt",
+          "timestamp": "2026-10-11T19:29:46.955188Z",
+          "purpose": "Match invoice against partially received PO.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices/invoice-490cb98a9916/match",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "partial_match",
+            "matched": false,
+            "partial": true,
+            "message": "PO is only partially received"
+          },
+          "duration_ms": 7.741,
+          "expected_outcome": "Explicit partial/mismatch state",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Partial-receipt control observed.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": ""
+    },
+    {
+      "rule": "duplicate_invoice_protection",
+      "status": "HELD",
+      "evidence": {
+        "status_code": 409,
+        "before": [
+          {
+            "id": "invoice-e2b52983891f",
+            "vendor_id": "vendor-active",
+            "po_id": "po-948b9f5dc5ae",
+            "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+            "amount": "20.00",
+            "status": "created",
+            "matched": false
+          }
+        ],
+        "after": [
+          {
+            "id": "invoice-e2b52983891f",
+            "vendor_id": "vendor-active",
+            "po_id": "po-948b9f5dc5ae",
+            "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+            "amount": "20.00",
+            "status": "created",
+            "matched": false
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "name": "prohibited_operation_rejected",
+          "passed": true,
+          "expected": "HTTP 4xx",
+          "actual": 409,
+          "explanation": "The prohibited operation was rejected."
+        },
+        {
+          "name": "observable_state_unchanged",
+          "passed": true,
+          "expected": [
+            {
+              "id": "invoice-e2b52983891f",
+              "vendor_id": "vendor-active",
+              "po_id": "po-948b9f5dc5ae",
+              "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            }
+          ],
+          "actual": [
+            {
+              "id": "invoice-e2b52983891f",
+              "vendor_id": "vendor-active",
+              "po_id": "po-948b9f5dc5ae",
+              "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            }
+          ],
+          "explanation": "Observable state remained unchanged."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.963613Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ],
+            "description": "QA duplicate"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-948b9f5dc5ae",
+            "vendor_id": "vendor-active",
+            "status": "draft",
+            "description": "QA duplicate",
+            "lines": [
+              {
+                "id": "line-4bd5b77fc2f6",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 6.518,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-11T19:29:46.970627Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-948b9f5dc5ae/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-948b9f5dc5ae",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA duplicate",
+            "lines": [
+              {
+                "id": "line-4bd5b77fc2f6",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 5.354,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-11T19:29:46.976383Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-948b9f5dc5ae/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "id": "po-948b9f5dc5ae",
+            "vendor_id": "vendor-active",
+            "status": "received",
+            "description": "QA duplicate",
+            "lines": [
+              {
+                "id": "line-4bd5b77fc2f6",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "2",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 8.69,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-11T19:29:46.985778Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "po_id": "po-948b9f5dc5ae",
+            "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+            "amount": "20"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "invoice-e2b52983891f",
+            "vendor_id": "vendor-active",
+            "po_id": "po-948b9f5dc5ae",
+            "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+            "amount": "20.00",
+            "status": "created",
+            "matched": false
+          },
+          "duration_ms": 9.846,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_invoice_collection",
+          "timestamp": "2026-10-11T19:29:46.995986Z",
+          "purpose": "Observe invoice resources for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": [
+            {
+              "id": "invoice-b094cb3a6027",
+              "vendor_id": "vendor-active",
+              "po_id": "po-2777cc68cc17",
+              "invoice_number": "qa-20261011T192817Z-887581-happy-invoice",
+              "amount": "20.00",
+              "status": "approved",
+              "matched": true
+            },
+            {
+              "id": "invoice-1038c82b5cb9",
+              "vendor_id": "vendor-active",
+              "po_id": "po-ab03be269e8e",
+              "invoice_number": "qa-20261011T192817Z-887581-unmatched-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-b6173ee52a5c",
+              "vendor_id": "vendor-active",
+              "po_id": "po-bce9f6961de9",
+              "invoice_number": "qa-20261011T192817Z-887581-partial-invoice",
+              "amount": "10.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-30398824ed43",
+              "vendor_id": "vendor-active",
+              "po_id": "po-6169e06b6e8f",
+              "invoice_number": "qa-20261011T192817Z-887581-duplicate-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-d9e7c0c4b572",
+              "vendor_id": "vendor-active",
+              "po_id": "po-db68ab8e495b",
+              "invoice_number": "qa-20261011T192817Z-887581-gl-invoice",
+              "amount": "20.00",
+              "status": "approved",
+              "matched": true
+            },
+            {
+              "id": "invoice-f6b842510ab0",
+              "vendor_id": "vendor-active",
+              "po_id": "po-7d2147fcf13e",
+              "invoice_number": "qa-20261011T192946Z-644463-happy-invoice",
+              "amount": "20.00",
+              "status": "approved",
+              "matched": true
+            },
+            {
+              "id": "invoice-bab3c5bfb8b1",
+              "vendor_id": "vendor-active",
+              "po_id": "po-70fcbbfbfa44",
+              "invoice_number": "qa-20261011T192946Z-644463-unmatched-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-490cb98a9916",
+              "vendor_id": "vendor-active",
+              "po_id": "po-fdcc8cdf4ec5",
+              "invoice_number": "qa-20261011T192946Z-644463-partial-invoice",
+              "amount": "10.00",
+              "status": "partial_match",
+              "matched": false
+            },
+            {
+              "id": "invoice-e2b52983891f",
+              "vendor_id": "vendor-active",
+              "po_id": "po-948b9f5dc5ae",
+              "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            }
+          ],
+          "duration_ms": 7.802,
+          "expected_outcome": "Invoice collection is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Invoice collection captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_duplicate_invoice",
+          "timestamp": "2026-10-11T19:29:47.004568Z",
+          "purpose": "Repeat same vendor and invoice number.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "po_id": "po-948b9f5dc5ae",
+            "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+            "amount": "20"
+          },
+          "status_code": 409,
+          "response_body": {
+            "detail": "duplicate invoice number for vendor"
+          },
+          "duration_ms": 7.163,
+          "expected_outcome": "Duplicate rejected",
+          "observed_outcome": "HTTP 409",
+          "interpretation": "Duplicate control attempt.",
+          "deterministic_assertions": [],
+          "verdict": "HELD",
+          "attempt": 1
+        },
+        {
+          "step_name": "observe_invoice_collection",
+          "timestamp": "2026-10-11T19:29:47.012101Z",
+          "purpose": "Observe invoice resources for before/after mutation verification.",
+          "method": "GET",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": [
+            {
+              "id": "invoice-b094cb3a6027",
+              "vendor_id": "vendor-active",
+              "po_id": "po-2777cc68cc17",
+              "invoice_number": "qa-20261011T192817Z-887581-happy-invoice",
+              "amount": "20.00",
+              "status": "approved",
+              "matched": true
+            },
+            {
+              "id": "invoice-1038c82b5cb9",
+              "vendor_id": "vendor-active",
+              "po_id": "po-ab03be269e8e",
+              "invoice_number": "qa-20261011T192817Z-887581-unmatched-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-b6173ee52a5c",
+              "vendor_id": "vendor-active",
+              "po_id": "po-bce9f6961de9",
+              "invoice_number": "qa-20261011T192817Z-887581-partial-invoice",
+              "amount": "10.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-30398824ed43",
+              "vendor_id": "vendor-active",
+              "po_id": "po-6169e06b6e8f",
+              "invoice_number": "qa-20261011T192817Z-887581-duplicate-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-d9e7c0c4b572",
+              "vendor_id": "vendor-active",
+              "po_id": "po-db68ab8e495b",
+              "invoice_number": "qa-20261011T192817Z-887581-gl-invoice",
+              "amount": "20.00",
+              "status": "approved",
+              "matched": true
+            },
+            {
+              "id": "invoice-f6b842510ab0",
+              "vendor_id": "vendor-active",
+              "po_id": "po-7d2147fcf13e",
+              "invoice_number": "qa-20261011T192946Z-644463-happy-invoice",
+              "amount": "20.00",
+              "status": "approved",
+              "matched": true
+            },
+            {
+              "id": "invoice-bab3c5bfb8b1",
+              "vendor_id": "vendor-active",
+              "po_id": "po-70fcbbfbfa44",
+              "invoice_number": "qa-20261011T192946Z-644463-unmatched-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            },
+            {
+              "id": "invoice-490cb98a9916",
+              "vendor_id": "vendor-active",
+              "po_id": "po-fdcc8cdf4ec5",
+              "invoice_number": "qa-20261011T192946Z-644463-partial-invoice",
+              "amount": "10.00",
+              "status": "partial_match",
+              "matched": false
+            },
+            {
+              "id": "invoice-e2b52983891f",
+              "vendor_id": "vendor-active",
+              "po_id": "po-948b9f5dc5ae",
+              "invoice_number": "qa-20261011T192946Z-644463-duplicate-invoice",
+              "amount": "20.00",
+              "status": "created",
+              "matched": false
+            }
+          ],
+          "duration_ms": 6.046,
+          "expected_outcome": "Invoice collection is observable",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Invoice collection captured.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": "A rejection counts as held only with observable non-mutation."
+    },
+    {
+      "rule": "gl_balance",
+      "status": "HELD",
+      "evidence": {
+        "total_debits": "20.00",
+        "total_credits": "20.00",
+        "lines": [
+          {
+            "account": "Expense",
+            "debit": "20.00",
+            "credit": "0.00"
+          },
+          {
+            "account": "Accounts Payable",
+            "debit": "0.00",
+            "credit": "20.00"
+          }
+        ]
+      },
+      "assertions": [
+        {
+          "name": "total_debits_equal_total_credits",
+          "passed": true,
+          "expected": "20.00",
+          "actual": "20.00",
+          "explanation": "Journal totals were summed with Decimal."
+        }
+      ],
+      "steps": [
+        {
+          "step_name": "create_purchase_order",
+          "timestamp": "2026-10-11T19:29:47.019075Z",
+          "purpose": "Create an isolated PO from discovered schema and SKU.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2",
+                "unit_price": "10"
+              }
+            ],
+            "description": "QA gl"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "po-158c669455d3",
+            "vendor_id": "vendor-active",
+            "status": "draft",
+            "description": "QA gl",
+            "lines": [
+              {
+                "id": "line-2b26e8f27319",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 11.167,
+          "expected_outcome": "Draft PO created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "submit_purchase_order",
+          "timestamp": "2026-10-11T19:29:47.030848Z",
+          "purpose": "Move the PO from draft to submitted state.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-158c669455d3/submit",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "id": "po-158c669455d3",
+            "vendor_id": "vendor-active",
+            "status": "submitted",
+            "description": "QA gl",
+            "lines": [
+              {
+                "id": "line-2b26e8f27319",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "0",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 8.63,
+          "expected_outcome": "PO submitted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "receive_goods",
+          "timestamp": "2026-10-11T19:29:47.040144Z",
+          "purpose": "Record the intended goods receipt quantity.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/purchase-orders/po-158c669455d3/receive",
+          "request_body": {
+            "lines": [
+              {
+                "sku": "STONE-1",
+                "quantity": "2"
+              }
+            ]
+          },
+          "status_code": 200,
+          "response_body": {
+            "id": "po-158c669455d3",
+            "vendor_id": "vendor-active",
+            "status": "received",
+            "description": "QA gl",
+            "lines": [
+              {
+                "id": "line-2b26e8f27319",
+                "sku": "STONE-1",
+                "ordered_quantity": "2",
+                "received_quantity": "2",
+                "unit_price": "10.00"
+              }
+            ]
+          },
+          "duration_ms": 10.112,
+          "expected_outcome": "Goods receipt recorded",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "create_invoice",
+          "timestamp": "2026-10-11T19:29:47.050784Z",
+          "purpose": "Create an invoice against the isolated PO.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices",
+          "request_body": {
+            "vendor_id": "vendor-active",
+            "po_id": "po-158c669455d3",
+            "invoice_number": "qa-20261011T192946Z-644463-gl-invoice",
+            "amount": "20"
+          },
+          "status_code": 201,
+          "response_body": {
+            "id": "invoice-e1e81ba248f4",
+            "vendor_id": "vendor-active",
+            "po_id": "po-158c669455d3",
+            "invoice_number": "qa-20261011T192946Z-644463-gl-invoice",
+            "amount": "20.00",
+            "status": "created",
+            "matched": false
+          },
+          "duration_ms": 9.626,
+          "expected_outcome": "Invoice created",
+          "observed_outcome": "HTTP 201",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "match_invoice",
+          "timestamp": "2026-10-11T19:29:47.061209Z",
+          "purpose": "Run the three-way match.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices/invoice-e1e81ba248f4/match",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "matched",
+            "matched": true,
+            "partial": false
+          },
+          "duration_ms": 5.118,
+          "expected_outcome": "Invoice matched",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        },
+        {
+          "step_name": "approve_invoice",
+          "timestamp": "2026-10-11T19:29:47.066696Z",
+          "purpose": "Approve matched invoice and inspect GL posting.",
+          "method": "POST",
+          "url": "http://127.0.0.1:8000/invoices/invoice-e1e81ba248f4/approve",
+          "request_body": null,
+          "status_code": 200,
+          "response_body": {
+            "status": "approved",
+            "invoice_id": "invoice-e1e81ba248f4",
+            "journal": {
+              "id": "journal-7afd8c0c52b9",
+              "invoice_id": "invoice-e1e81ba248f4",
+              "lines": [
+                {
+                  "account": "Expense",
+                  "debit": "20.00",
+                  "credit": "0.00"
+                },
+                {
+                  "account": "Accounts Payable",
+                  "debit": "0.00",
+                  "credit": "20.00"
+                }
+              ]
+            }
+          },
+          "duration_ms": 3.51,
+          "expected_outcome": "Invoice approved and journal posted",
+          "observed_outcome": "HTTP 200",
+          "interpretation": "Request succeeded.",
+          "deterministic_assertions": [],
+          "verdict": "PASS",
+          "attempt": 1
+        }
+      ],
+      "explanation": ""
+    }
+  ],
+  "summary": {
+    "overall_status": "PASS",
+    "held": 7,
+    "breached": 0,
+    "inconclusive": 0,
+    "errors": 0,
+    "highest_risk_findings": []
+  }
+}

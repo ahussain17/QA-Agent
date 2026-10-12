@@ -23,13 +23,27 @@ def test_overpayment_rejection_and_vulnerable_behavior():
     breached = InvariantJudge().overpayment(Decimal("10"), Decimal("10.01"), True, "0", "10.01")
     assert held.status == "HELD"
     assert breached.status == "BREACHED"
+    not_an_attack = InvariantJudge().overpayment(Decimal("10"), Decimal("10"), False, "0", "0")
+    assert not_an_attack.status == "INCONCLUSIVE"
 
 
 def test_partial_receipt_reporting():
     held = InvariantJudge().partial_receipt(Decimal("2"), Decimal("1"), 200, {"status": "partial_match"})
     breached = InvariantJudge().partial_receipt(Decimal("2"), Decimal("1"), 200, {"status": "fully_matched"})
+    false_marker = InvariantJudge().partial_receipt(
+        Decimal("2"), Decimal("1"), 200, {"status": "matched", "matched": True, "partial": False}
+    )
     assert held.status == "HELD"
     assert breached.status == "BREACHED"
+    assert false_marker.status == "BREACHED"
+    contradictory = InvariantJudge().partial_receipt(
+        Decimal("2"), Decimal("1"), 200, {"status": "partial_match", "partial": True, "matched": True}
+    )
+    generic_rejection = InvariantJudge().partial_receipt(
+        Decimal("2"), Decimal("1"), 409, {"detail": "request rejected"}
+    )
+    assert contradictory.status == "BREACHED"
+    assert generic_rejection.status == "INCONCLUSIVE"
 
 
 def test_balanced_unbalanced_and_unavailable_gl():
@@ -37,9 +51,11 @@ def test_balanced_unbalanced_and_unavailable_gl():
     balanced = judge.gl_balance({"lines": [{"debit": "10.01", "credit": "0"}, {"debit": "0", "credit": "10.01"}]})
     unbalanced = judge.gl_balance({"lines": [{"debit": "10.01", "credit": "0"}, {"debit": "0", "credit": "10.00"}]})
     missing = judge.gl_balance({"status": "approved"})
+    malformed = judge.gl_balance({"lines": [{"debit": "ten", "credit": "0"}]})
     assert balanced.status == "HELD"
     assert unbalanced.status == "BREACHED"
     assert missing.status == "INCONCLUSIVE"
+    assert malformed.status == "INCONCLUSIVE"
 
 
 def test_received_value_uses_decimal():

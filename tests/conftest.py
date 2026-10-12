@@ -37,31 +37,33 @@ def mock_p2p_transport() -> httpx.MockTransport:
             },
             "/items": {"get": {"operationId": "list_items", "responses": {"200": {"description": "ok"}}}},
             "/purchase-orders": {
+                "get": {"operationId": "list_purchase_orders", "responses": {"200": {"description": "ok"}}},
                 "post": {
                     "operationId": "create_purchase_order",
                     "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/POCreate"}}}},
                     "responses": {"201": {"description": "created"}},
                 }
             },
-            "/purchase-orders/{id}/submit": {"post": {"operationId": "submit_purchase_order", "responses": {"200": {"description": "ok"}}}},
-            "/purchase-orders/{id}/receive": {
+            "/purchase-orders/{po_id}/submit": {"post": {"operationId": "submit_purchase_order", "responses": {"200": {"description": "ok"}}}},
+            "/purchase-orders/{po_id}/receive": {
                 "post": {
                     "operationId": "receive_purchase_order",
                     "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Receipt"}}}},
                     "responses": {"200": {"description": "ok"}},
                 }
             },
-            "/purchase-orders/{id}": {"get": {"operationId": "get_purchase_order", "responses": {"200": {"description": "ok"}}}},
+            "/purchase-orders/{po_id}": {"get": {"operationId": "get_purchase_order", "responses": {"200": {"description": "ok"}}}},
             "/invoices": {
+                "get": {"operationId": "list_invoices", "responses": {"200": {"description": "ok"}}},
                 "post": {
                     "operationId": "create_invoice",
                     "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/InvoiceCreate"}}}},
                     "responses": {"201": {"description": "created"}},
                 }
             },
-            "/invoices/{id}/match": {"post": {"operationId": "match_invoice", "responses": {"200": {"description": "ok"}}}},
-            "/invoices/{id}/approve": {"post": {"operationId": "approve_invoice", "responses": {"200": {"description": "ok"}}}},
-            "/vendors/{id}/exposure": {"get": {"operationId": "get_vendor_exposure", "responses": {"200": {"description": "ok"}}}},
+            "/invoices/{invoice_id}/match": {"post": {"operationId": "match_invoice", "responses": {"200": {"description": "ok"}}}},
+            "/invoices/{invoice_id}/approve": {"post": {"operationId": "approve_invoice", "responses": {"200": {"description": "ok"}}}},
+            "/vendors/{vendor_id}/exposure": {"get": {"operationId": "get_vendor_exposure", "responses": {"200": {"description": "ok"}}}},
         },
         "components": {
             "schemas": {
@@ -149,6 +151,11 @@ def mock_p2p_transport() -> httpx.MockTransport:
                 "status": "draft",
             }
             return httpx.Response(201, json={"id": po_id, "lines": [{"id": f"{po_id}-line", **line}]})
+        if method == "GET" and path == "/purchase-orders":
+            return httpx.Response(200, json=[
+                {"id": po["id"], "vendor_id": po["vendor_id"], "status": po["status"]}
+                for po in state["pos"].values()
+            ])
         match = __import__("re").match(r"/purchase-orders/([^/]+)(?:/(submit|receive))?$", path)
         if match:
             po = state["pos"].get(match.group(1))
@@ -179,6 +186,16 @@ def mock_p2p_transport() -> httpx.MockTransport:
             state["invoices"][inv_id] = {**payload, "id": inv_id, "matched": False, "approved": False}
             state["invoice_keys"].add(key)
             return httpx.Response(201, json={"id": inv_id})
+        if method == "GET" and path == "/invoices":
+            return httpx.Response(200, json=[
+                {
+                    "id": invoice["id"],
+                    "vendor_id": invoice["vendor_id"],
+                    "invoice_number": invoice["invoice_number"],
+                    "status": "approved" if invoice["approved"] else "created",
+                }
+                for invoice in state["invoices"].values()
+            ])
         match = __import__("re").match(r"/invoices/([^/]+)/(match|approve)$", path)
         if match:
             invoice = state["invoices"][match.group(1)]

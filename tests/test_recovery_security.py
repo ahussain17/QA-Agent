@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import httpx
 
-from p2p_qa.agents import AdaptiveRequester
+from p2p_qa.agents import AdaptiveRequester, _resource_id
 from p2p_qa.client import ApiClient
 from p2p_qa.payloads import PayloadFactory
 from p2p_qa.schema import Operation, SchemaExplorer
@@ -79,4 +79,9 @@ def test_client_rejects_absolute_escape():
             pass
         else:
             raise AssertionError("absolute URL was accepted")
+
+
+def test_line_id_is_taken_from_nested_po_line_not_top_level_po():
+    response = {"id": "po-1", "lines": [{"id": "line-1", "sku": "STONE-1"}]}
+    assert _resource_id(response, "line") == "line-1"
 

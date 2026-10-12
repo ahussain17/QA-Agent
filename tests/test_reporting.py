@@ -9,10 +9,10 @@ from p2p_qa.cli import app
 from typer.testing import CliRunner
 
 
-def report(happy="PASS", overall="PASS", breached=0, inconclusive=0):
+def report(happy="PASS", overall="PASS", breached=0, inconclusive=0, discovery="PASS"):
     return QAReport(
         run=RunInfo(id="qa-test", started_at=datetime.now(timezone.utc), base_url="http://localhost:8000", schema_hash="abc", model="test"),
-        discovery=DiscoveryReport(status="PASS"),
+        discovery=DiscoveryReport(status=discovery),
         happy_path=HappyPathReport(status=happy),
         adversarial=[],
         summary=SummaryReport(overall_status=overall, breached=breached, inconclusive=inconclusive),
@@ -31,6 +31,7 @@ def test_cli_exit_codes():
     assert exit_code(report(happy="FAIL", overall="FAIL")) == 1
     assert exit_code(report(overall="INCONCLUSIVE", inconclusive=1), True) == 3
     assert exit_code(report(overall="INCONCLUSIVE", inconclusive=1), False) == 0
+    assert exit_code(report(happy="INCONCLUSIVE", overall="ERROR", discovery="ERROR")) == 2
 
 
 def test_actual_cli_propagates_exit_policy(monkeypatch, tmp_path):

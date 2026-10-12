@@ -30,6 +30,19 @@ def test_all_controls_with_mock_transport(mock_p2p_transport):
     assert report.summary.overall_status == "PASS"
 
 
+def test_adversarial_only_ignores_the_not_run_happy_path_placeholder(mock_p2p_transport):
+    report = execute(
+        "http://localhost:8000",
+        mode="adversarial",
+        transport=mock_p2p_transport,
+        max_actions=150,
+    )
+    assert report.happy_path.status == "INCONCLUSIVE"
+    assert report.happy_path.resources["not_run"] is True
+    assert report.summary.held == 7
+    assert report.summary.overall_status == "PASS"
+
+
 def test_mock_transport_surfaces_vulnerable_overpayment_and_gl_failures():
     def vulnerable_api(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/overpay/approve":

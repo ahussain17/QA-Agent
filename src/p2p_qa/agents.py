@@ -11,7 +11,7 @@ from .llm import Reasoner
 from .models import AssertionResult, ControlResult, HappyPathReport, StepEvidence
 from .payloads import PayloadFactory
 from .schema import Operation, SchemaExplorer
-from .utils import find_first
+from .utils import decimal, find_first
 
 
 def _records(value: Any) -> list[dict[str, Any]]:
@@ -24,6 +24,17 @@ def _records(value: Any) -> list[dict[str, Any]]:
     return []
 
 
+def _po_lines(value: Any) -> list[dict[str, Any]]:
+    """Normalize nested and single-line PO representations for deterministic checks."""
+    if not isinstance(value, dict):
+        return []
+    for key in ("lines", "line_items", "items"):
+        candidate = value.get(key)
+        if isinstance(candidate, list):
+            return [item for item in candidate if isinstance(item, dict)]
+    return [value]
+
+
 def _resource_id(value: Any, kind: str) -> Any:
     aliases = {
         "vendor": ["vendor_id", "supplier_id", "id"],
@@ -31,6 +42,19 @@ def _resource_id(value: Any, kind: str) -> Any:
         "invoice": ["invoice_id", "id"],
         "line": ["line_id", "po_line_id", "id"],
     }
+    if kind == "line" and isinstance(value, dict):
+        for collection_name in ("lines", "line_items", "items"):
+            collection = value.get(collection_name)
+            if isinstance(collection, list):
+                for item in collection:
+                    if isinstance(item, dict):
+                        line_id = find_first(
+                            item,
+                            ["line_id", "po_line_id", "purchase_order_line_id", "item_line_id", "id"],
+                        )
+                        if line_id is not None:
+                            return line_id
+        return find_first(value, aliases[kind][:-1])
     return find_first(value, aliases[kind])
 
 
@@ -182,7 +206,14 @@ class BaseAgent:
         self.judge = InvariantJudge()
 
     def _op(self, method: str, path: str, *terms: str) -> Operation | None:
-        return self.explorer.operations.get((method, path)) or self.explorer.find_operation(method, *terms)
+        exact = self.explorer.operations.get((method.upper(), path))
+        if exact:
+            return exact
+        normalized = re.sub(r"\{[^}]+\}", "{}", path)
+        for (candidate_method, candidate_path), operation in self.explorer.operations.items():
+            if candidate_method == method.upper() and re.sub(r"\{[^}]+\}", "{}", candidate_path) == normalized:
+                return operation
+        return self.explorer.find_operation(method, *terms)
 
     def _vendor(self, active: bool, suffix: str) -> tuple[dict[str, Any] | None, list[StepEvidence]]:
         vendors = _records(self.explorer.safe_data.get("/vendors"))
@@ -242,6 +273,22 @@ class BaseAgent:
                 "Observe PO receipt state.",
                 "PO state is observable",
                 "PO captured." if result.ok else "PO unavailable.",
+                "PASS" if result.ok else "INCONCLUSIVE",
+            )
+        ]
+
+    def _collection(self, path: str, label: str) -> tuple[Any, list[StepEvidence]]:
+        op = self.explorer.operations.get(("GET", path))
+        if not op:
+            return None, []
+        result = self.client.request("GET", op.path)
+        return (result.response_body if result.ok else None), [
+            _step(
+                result,
+                f"observe_{label}_collection",
+                f"Observe {label} resources for before/after mutation verification.",
+                f"{label.title()} collection is observable",
+                f"{label.title()} collection captured." if result.ok else f"{label.title()} collection unavailable.",
                 "PASS" if result.ok else "INCONCLUSIVE",
             )
         ]
@@ -349,12 +396,13 @@ class BaseAgent:
             "invoice_number": f"{self.run_id}-{suffix}-invoice",
         }
         state.invoice_payload = self.factory.build(invoice.request_schema, invoice_context)
-        result, steps, _ = self.requester.request(
+        result, steps, final_invoice_payload = self.requester.request(
             invoice, invoice.path, state.invoice_payload, invoice_context,
             name="create_invoice", purpose="Create an invoice against the isolated PO.",
             expected="Invoice created",
         )
         state.steps.extend(steps)
+        state.invoice_payload = final_invoice_payload
         if not result.ok:
             state.error = "Invoice creation failed."
             return state
@@ -418,6 +466,34 @@ class ExplorationAgent(BaseAgent):
                     ),
                 },
             )
+        detail, detail_steps = self._detail(state.po_id)
+        state.steps.extend(detail_steps)
+        try:
+            lines = _po_lines(detail)
+            received_value = self.judge.received_value(lines)
+            invoice_value = decimal(find_first(state.invoice_payload, ["amount", "total", "total_amount", "invoice_amount", "gross_amount"]))
+        except ValueError:
+            received_value = None
+            invoice_value = None
+        boundary_passed = received_value is not None and invoice_value == received_value
+        boundary_assertion = AssertionResult(
+            name="invoice_equals_observed_received_value",
+            passed=boundary_passed if received_value is not None and invoice_value is not None else None,
+            expected=str(received_value) if received_value is not None else "observable received value",
+            actual=str(invoice_value) if invoice_value is not None else None,
+            explanation="The exact-boundary invoice is compared with Decimal against observed PO receipt lines.",
+        )
+        if detail_steps:
+            detail_steps[-1].deterministic_assertions.append(boundary_assertion)
+            if boundary_assertion.passed is False:
+                detail_steps[-1].verdict = "FAIL"
+        if boundary_assertion.passed is not True:
+            return HappyPathReport(
+                status="FAIL" if boundary_assertion.passed is False else "INCONCLUSIVE",
+                steps=state.steps,
+                plan=plan,
+                resources={"boundary_assertion": boundary_assertion.model_dump(mode="json")},
+            )
         return HappyPathReport(
             status="PASS",
             steps=state.steps,
@@ -427,8 +503,9 @@ class ExplorationAgent(BaseAgent):
                 "purchase_order_id": state.po_id,
                 "invoice_id": state.invoice_id,
                 "approval": state.approval_response,
-                "exact_boundary_received_value": "20",
-                "exact_boundary_invoice_value": "20",
+                "exact_boundary_received_value": str(received_value),
+                "exact_boundary_invoice_value": str(invoice_value),
+                "boundary_assertion": boundary_assertion.model_dump(mode="json"),
             },
         )
 
@@ -484,10 +561,31 @@ class AdversarialAgent(BaseAgent):
         op = self._op("POST", "/purchase-orders/{id}/receive", "purchase", "receive")
         if not op or not op.request_schema:
             return self._inconclusive("excess_goods_receipt", state, "Receipt schema unavailable.")
-        context = {"run_id": self.run_id, "quantity": Decimal("3"), "po_id": state.po_id, "sku": self.explorer.sku_candidates[0]}
+        ordered = decimal(find_first(before, ["ordered_quantity", "quantity_ordered", "ordered_qty", "ordered"]))
+        if ordered is None:
+            return self._inconclusive(
+                "excess_goods_receipt",
+                state,
+                "The ordered quantity was not observable before the attack.",
+            )
+        attack_quantity = ordered + Decimal("1")
+        context = {
+            "run_id": self.run_id,
+            "quantity": attack_quantity,
+            "po_id": state.po_id,
+            "line_id": _resource_id(before, "line") or _resource_id(state.po_response, "line"),
+            "sku": self.explorer.sku_candidates[0],
+        }
         payload = self.factory.build(op.request_schema, context)
         result = self.client.request("POST", _path(op, state.po_id), json=payload)
-        attack = _step(result, "receive_excess_quantity", "Attempt to receive 3 units against 2 ordered.", "Receipt rejected", "Negative control attempt.", "HELD" if 400 <= (result.status_code or 0) < 500 else "BREACHED")
+        attack = _step(
+            result,
+            "receive_excess_quantity",
+            f"Attempt to receive {attack_quantity} units against {ordered} ordered.",
+            "Receipt rejected",
+            "Negative control attempt.",
+            "HELD" if 400 <= (result.status_code or 0) < 500 else "BREACHED",
+        )
         after, after_steps = self._detail(state.po_id)
         return self.judge.rejection_control(
             "excess_goods_receipt", result.status_code, before, after,
@@ -499,6 +597,17 @@ class AdversarialAgent(BaseAgent):
         state = self.setup("overpay", received_qty=Decimal("1"), invoice_amount=None)
         if state.error:
             return self._inconclusive("overpayment_protection", state)
+        detail, detail_steps = self._detail(state.po_id)
+        lines = _po_lines(detail)
+        try:
+            received_value = self.judge.received_value(lines)
+        except ValueError:
+            return self._inconclusive(
+                "overpayment_protection",
+                state,
+                "Received quantity and agreed unit price were not observable.",
+            )
+        invoice_value = received_value + Decimal("0.01")
         before, before_steps = self._exposure(state.vendor_id)
         op = self._op("POST", "/invoices", "invoice")
         if not op or not op.request_schema:
@@ -506,11 +615,11 @@ class AdversarialAgent(BaseAgent):
         context = {
             "run_id": self.run_id, "vendor_id": state.vendor_id, "po_id": state.po_id,
             "sku": self.explorer.sku_candidates[0], "quantity": Decimal("1"), "unit_price": Decimal("10"),
-            "amount": Decimal("10.01"), "invoice_number": f"{self.run_id}-overpay-invoice",
+            "amount": invoice_value, "invoice_number": f"{self.run_id}-overpay-invoice",
         }
         payload = self.factory.build(op.request_schema, context)
         create = self.client.request("POST", op.path, json=payload)
-        steps = state.steps + before_steps + [_step(create, "create_over_value_invoice", "Attempt invoice one cent above received value.", "Invoice cannot become payable", "Overpayment attack initiated.", "PASS" if create.ok else "HELD")]
+        steps = state.steps + detail_steps + before_steps + [_step(create, "create_over_value_invoice", "Attempt invoice one cent above observed received value.", "Invoice cannot become payable", "Overpayment attack initiated.", "PASS" if create.ok else "HELD")]
         approved: bool | None = False if create.status_code and 400 <= create.status_code < 500 else None
         if create.ok:
             invoice_id = _resource_id(create.response_body, "invoice")
@@ -530,7 +639,7 @@ class AdversarialAgent(BaseAgent):
                     approved = False
         after, after_steps = self._exposure(state.vendor_id)
         steps.extend(after_steps)
-        return self.judge.overpayment(Decimal("10"), Decimal("10.01"), approved, before, after, steps=steps)
+        return self.judge.overpayment(received_value, invoice_value, approved, before, after, steps=steps)
 
     def _inactive_vendor(self) -> ControlResult:
         vendor, vendor_steps = self._vendor(False, "inactive")
@@ -538,7 +647,11 @@ class AdversarialAgent(BaseAgent):
         if not vendor:
             return self._inconclusive("inactive_vendor_gate", empty, "No inactive vendor could be selected or created.")
         vendor_id = _resource_id(vendor, "vendor")
-        before, before_steps = self._exposure(vendor_id)
+        before_collection, before_steps = self._collection("/purchase-orders", "purchase_order")
+        before = [
+            item for item in _records(before_collection)
+            if str(find_first(item, ["vendor_id", "supplier_id"])) == str(vendor_id)
+        ] if before_collection is not None else None
         op = self._op("POST", "/purchase-orders", "purchase", "order")
         if not op or not op.request_schema or not self.explorer.sku_candidates:
             return self._inconclusive("inactive_vendor_gate", empty, "PO schema or SKU unavailable.")
@@ -546,7 +659,11 @@ class AdversarialAgent(BaseAgent):
         payload = self.factory.build(op.request_schema, context)
         result = self.client.request("POST", op.path, json=payload)
         attack = _step(result, "create_po_inactive_vendor", "Attempt PO creation for inactive vendor.", "PO rejected", "Negative control attempt.", "HELD" if 400 <= (result.status_code or 0) < 500 else "BREACHED")
-        after, after_steps = self._exposure(vendor_id)
+        after_collection, after_steps = self._collection("/purchase-orders", "purchase_order")
+        after = [
+            item for item in _records(after_collection)
+            if str(find_first(item, ["vendor_id", "supplier_id"])) == str(vendor_id)
+        ] if after_collection is not None else None
         return self.judge.rejection_control(
             "inactive_vendor_gate", result.status_code, before, after,
             steps=vendor_steps + before_steps + [attack] + after_steps,
@@ -556,24 +673,43 @@ class AdversarialAgent(BaseAgent):
         state = self.setup("partial", received_qty=Decimal("1"), invoice_amount=Decimal("10"))
         if state.error:
             return self._inconclusive("partial_receipt_disclosure", state)
+        detail, detail_steps = self._detail(state.po_id)
+        lines = _po_lines(detail)
+        first_line = lines[0] if lines and isinstance(lines[0], dict) else {}
+        ordered = decimal(find_first(first_line, ["ordered_quantity", "quantity_ordered", "ordered_qty", "ordered"]))
+        received = decimal(find_first(first_line, ["received_quantity", "quantity_received", "received_qty", "received"]))
+        if ordered is None or received is None:
+            state.steps.extend(detail_steps)
+            return self._inconclusive("partial_receipt_disclosure", state, "Ordered and received quantities were not observable.")
         match = self._op("POST", "/invoices/{id}/match", "invoice", "match")
         if not match:
             return self._inconclusive("partial_receipt_disclosure", state, "Match operation unavailable.")
         result = self.client.request("POST", _path(match, state.invoice_id))
         step = _step(result, "match_partial_receipt", "Match invoice against partially received PO.", "Explicit partial/mismatch state", "Partial-receipt control observed.", "PASS" if result.status_code else "ERROR")
-        return self.judge.partial_receipt(Decimal("2"), Decimal("1"), result.status_code, result.response_body, steps=state.steps + [step])
+        return self.judge.partial_receipt(ordered, received, result.status_code, result.response_body, steps=state.steps + detail_steps + [step])
 
     def _duplicate_invoice(self) -> ControlResult:
         state = self.setup("duplicate")
         if state.error or not state.invoice_payload:
             return self._inconclusive("duplicate_invoice_protection", state)
-        before, before_steps = self._exposure(state.vendor_id)
+        invoice_number = find_first(state.invoice_payload, ["invoice_number", "invoice_no", "number"])
+        before_collection, before_steps = self._collection("/invoices", "invoice")
+        before = [
+            item for item in _records(before_collection)
+            if str(find_first(item, ["vendor_id", "supplier_id"])) == str(state.vendor_id)
+            and str(find_first(item, ["invoice_number", "invoice_no", "number"])) == str(invoice_number)
+        ] if before_collection is not None else None
         op = self._op("POST", "/invoices", "invoice")
         if not op:
             return self._inconclusive("duplicate_invoice_protection", state, "Invoice operation unavailable.")
         result = self.client.request("POST", op.path, json=state.invoice_payload)
         attack = _step(result, "create_duplicate_invoice", "Repeat same vendor and invoice number.", "Duplicate rejected", "Duplicate control attempt.", "HELD" if 400 <= (result.status_code or 0) < 500 else "BREACHED")
-        after, after_steps = self._exposure(state.vendor_id)
+        after_collection, after_steps = self._collection("/invoices", "invoice")
+        after = [
+            item for item in _records(after_collection)
+            if str(find_first(item, ["vendor_id", "supplier_id"])) == str(state.vendor_id)
+            and str(find_first(item, ["invoice_number", "invoice_no", "number"])) == str(invoice_number)
+        ] if after_collection is not None else None
         return self.judge.rejection_control(
             "duplicate_invoice_protection", result.status_code, before, after,
             steps=state.steps + before_steps + [attack] + after_steps,
